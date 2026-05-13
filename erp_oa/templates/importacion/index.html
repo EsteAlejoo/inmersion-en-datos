@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Importar Registro Agricola{% endblock %}
+{% block content %}
+<div class="card" style="max-width:600px">
+  <h1>Importar Registro Agricola</h1>
+  <p class="text-muted" style="margin-bottom:20px;font-size:13px">
+    Sube el Excel de registros de la agricola para generar las OA retroactivas automaticamente.
+  </p>
+
+  <form method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label>Agricola *</label>
+      <select name="agricola_id" required>
+        <option value="">Seleccionar...</option>
+        {% for a in agricolas %}
+        <option value="{{ a.id }}">{{ a.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Fecha Desde *</label>
+        <input type="date" name="fecha_desde" required>
+      </div>
+      <div class="form-group">
+        <label>Fecha Hasta *</label>
+        <input type="date" name="fecha_hasta" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Archivo Excel (.xlsx) *</label>
+      <input type="file" name="archivo" accept=".xlsx,.xls" required>
+    </div>
+    <div class="gap mt-2">
+      <button type="submit" class="btn btn-verde">Procesar Archivo</button>
+      <a href="{{ url_for('oas.lista') }}" class="btn btn-gris">Cancelar</a>
+    </div>
+  </form>
+
+  <div class="alerta-info" style="margin-top:20px;font-size:12px">
+    <strong>Formato esperado del Excel:</strong><br>
+    Col 0: Fecha | Col 2: Cuartel | Col 3: Cultivo | Col 4: Producto | Col 7: Dosis | Col 8: Mojamiento | Col 9: Superficie
+  </div>
+</div>
+{% endblock %}

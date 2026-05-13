@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}OA {{ oa.num_oa }}{% endblock %}
+{% block content %}
+
+<!-- Alertas -->
+{% if alertas %}
+  {% for a in alertas %}
+  <div class="alerta-{{ 'rojo' if a.nivel == 'ROJO' else 'amarillo' }}">
+    <strong>{{ a.nivel }}:</strong> {{ a.mensaje }}
+  </div>
+  {% endfor %}
+{% endif %}
+
+<div class="card">
+  <div class="gap" style="margin-bottom:16px">
+    <h1 style="margin:0">OA {{ oa.num_oa }} <span class="badge badge-{{ oa.estado }}">{{ oa.estado }}</span></h1>
+    <div class="gap" style="margin-left:auto">
+      {% if oa.estado == 'borrador' %}
+      <a href="{{ url_for('oas.editar', oa_id=oa.id) }}" class="btn btn-amarillo">Editar</a>
+      {% if pedir_confirmacion is defined and pedir_confirmacion %}
+      <form method="POST" action="{{ url_for('oas.confirmar', oa_id=oa.id) }}" style="display:inline">
+        <input type="hidden" name="forzar" value="1">
+        <button type="submit" class="btn btn-rojo">Confirmar igual (forzar)</button>
+      </form>
+      {% else %}
+      <form method="POST" action="{{ url_for('oas.confirmar', oa_id=oa.id) }}" style="display:inline">
+        <button type="submit" class="btn btn-verde">Confirmar OA</button>
+      </form>
+      {% endif %}
+      <form method="POST" action="{{ url_for('oas.anular', oa_id=oa.id) }}" style="display:inline"
+            onsubmit="return confirm('Anular OA {{ oa.num_oa }}?')">
+        <button type="submit" class="btn btn-rojo btn-sm">Anular</button>
+      </form>
+      {% endif %}
+      <a href="{{ url_for('oas.generar_pdf', oa_id=oa.id) }}" class="btn btn-azul" target="_blank">Descargar PDF</a>
+      <a href="{{ url_for('oas.lista') }}" class="btn btn-gris">Volver</a>
+    </div>
+  </div>
+
+  <!-- Cabecera OA -->
+  <div class="grid-3" style="margin-bottom:16px;font-size:13px">
+    <div><strong>Agricola:</strong> {{ oa.agricola.nombre }}</div>
+    <div><strong>Tipo OA:</strong> {{ oa.tipo_oa }}</div>
+    <div><strong>Especie:</strong> {{ oa.especie or '-' }}</div>
+    <div><strong>F. Emision:</strong> {{ oa.fecha_emision.strftime('%d-%m-%Y') }}</div>
+    <div><strong>F. Desde:</strong> {{ oa.fecha_desde.strftime('%d-%m-%Y') }}</div>
+    <div><strong>F. Inicio Aplic.:</strong> {{ oa.fecha_inicio_aplicacion.strftime('%d-%m-%Y') }}
+      {% if (oa.fecha_inicio_aplicacion - oa.fecha_emision).days < 2 %}
+      <span style="color:#dc3545;font-weight:bold"> MENOS DE 2 DIAS</span>
+      {% endif %}
+    </div>
+    <div><strong>Mojamiento:</strong> {{ oa.mojamiento_Lha }} L/ha</div>
+    <div><strong>Estanque:</strong> {{ oa.capacidad_estanque }} L</div>
+    <div><strong>Maquinaria:</strong> {{ oa.tipo_maquina or '-' }}</div>
+    <div><strong>Estado Fenologico:</strong> {{ oa.estado_fenologico or '-' }}</div>
+    <div><strong>Mercado Destino:</strong> {{ oa.mercado_destino or '-' }}</div>
+    <div><strong>Agronomo:</strong> {{ oa.agronomo or '-' }}</div>
+    {% if oa.ha_totales %}
+    <div><strong>Ha Totales:</strong> {{ oa.ha_totales }}</div>
+    <div><strong>Litros Totales:</strong> {{ oa.litros_totales }}</div>
+    <div><strong>Maquinadas Totales:</strong> {{ oa.maquinadas_totales }}</div>
+    {% endif %}
+  </div>
+
+  {% if oa.indicaciones %}
+  <div class="alerta-info"><strong>Indicaciones:</strong> {{ oa.indicaciones }}</div>
+  {% endif %}
+</div>
+
+<!-- Productos -->
+<div class="card">
+  <h2>Productos ({{ oa.productos|length }})</h2>
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre Comercial</th>
+        <th>Ingrediente Activo</th>
+        <th>Objetivo</th>
+        <th>Dosis/100L</th>
+        <th>Dosis/ha</th>
+        <th>Dosis/Maquinada</th>
+        {% if oa.ha_totales %}<th>Necesidad Total</th>{% endif %}
+        <th>Carencia</th>
+        <th>Banda SAG</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for op in oa.productos %}
+      {% set p = op.producto %}
+      {% set dosis_ha  = (op.dosis_100L * oa.mojamiento_Lha / 100)|round(2) %}
+      {% set dosis_maq = (op.dosis_100L * oa.capacidad_estanque / 100)|round(2) %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td><strong>{{ p.nombre_comercial }}</strong></td>
+        <td style="font-size:12px;color:#555">{{ p.ingrediente_activo }}</td>
+        <td style="font-size:12px">{{ op.objetivo or '-' }}</td>
+        <td><strong>{{ op.dosis_100L|int }} {{ op.unidad }}/100L</strong></td>
+        <td>
+          {% if op.unidad == 'g' %}{{ (dosis_ha/1000)|round(2) }} kg/ha
+          {% else %}{{ dosis_ha }} cc/ha{% endif %}
+        </td>
+        <td>
+          {% if op.unidad == 'g' %}{{ (dosis_maq/1000)|round(2) }} kg
+          {% else %}{{ dosis_maq }} cc{% endif %}
+        </td>
+        {% if oa.ha_totales %}
+        <td>
+          {% set nec = (dosis_ha * oa.ha_totales)|round(2) %}
+          {% if op.unidad == 'g' %}{{ (nec/1000)|round(2) }} kg
+          {% elif nec >= 1000 %}{{ (nec/1000)|round(2) }} L
+          {% else %}{{ nec }} cc{% endif %}
+        </td>
+        {% endif %}
+        <td>
+          {% if oa.especie == 'Limon' %}{{ p.carencia_limon or '-' }} dias
+          {% elif oa.especie == 'Naranja' %}{{ p.carencia_naranja or '-' }} dias
+          {% elif oa.especie == 'Mandarina' %}{{ p.carencia_mandarina or '-' }} dias
+          {% else %}-{% endif %}
+        </td>
+        <td>
+          {% if p.banda_sag %}
+          <span class="badge" style="background:{% if p.banda_sag=='NOCIVO' %}#f8d7da;color:#842029{% elif p.banda_sag=='CUIDADO' %}#fff3cd;color:#664d03{% else %}#d1e7dd;color:#0f5132{% endif %}">
+            {{ p.banda_sag }}
+          </span>
+          {% else %}-{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- Cuarteles -->
+<div class="card">
+  <h2>Cuarteles ({{ oa.cuarteles|length }})</h2>
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr>
+        <th>Cuartel</th>
+        <th>Especie</th>
+        <th>Ha Efectivas</th>
+        <th>Litros</th>
+        <th>Maquinadas</th>
+        <th>F. Aplicacion</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for oc in oa.cuarteles %}
+      <tr>
+        <td><strong>{{ oc.cuartel.nombre }}</strong></td>
+        <td>{{ oc.cuartel.especie }}</td>
+        <td>{{ oc.ha_efectivas }}</td>
+        <td>{{ oc.litros }}</td>
+        <td>{{ oc.maquinadas }}</td>
+        <td>{{ oc.fecha_aplicacion.strftime('%d-%m-%Y') if oc.fecha_aplicacion else '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% if oa.ha_totales %}
+    <tfoot>
+      <tr style="font-weight:bold;background:#f0fff4">
+        <td colspan="2">TOTALES</td>
+        <td>{{ oa.ha_totales }} ha</td>
+        <td>{{ oa.litros_totales }} L</td>
+        <td>{{ oa.maquinadas_totales }}</td>
+        <td></td>
+      </tr>
+    </tfoot>
+    {% endif %}
+  </table>
+  </div>
+</div>
+{% endblock %}

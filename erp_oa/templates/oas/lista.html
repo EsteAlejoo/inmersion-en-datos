@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Ordenes de Aplicacion{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="gap" style="margin-bottom:16px">
+    <h1 style="margin:0">Ordenes de Aplicacion</h1>
+    <a href="{{ url_for('oas.nueva') }}" class="btn btn-verde" style="margin-left:auto">+ Nueva OA</a>
+  </div>
+
+  <form method="get" class="gap" style="margin-bottom:16px">
+    <div>
+      <select name="agricola_id" style="width:180px">
+        <option value="">Todas las agricolas</option>
+        {% for a in agricolas %}
+        <option value="{{ a.id }}" {{ 'selected' if filtro_agricola == a.id|string }}>{{ a.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <select name="estado" style="width:140px">
+        <option value="">Todos los estados</option>
+        <option value="borrador"   {{ 'selected' if filtro_estado == 'borrador' }}>Borrador</option>
+        <option value="confirmada" {{ 'selected' if filtro_estado == 'confirmada' }}>Confirmada</option>
+        <option value="anulada"    {{ 'selected' if filtro_estado == 'anulada' }}>Anulada</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-gris btn-sm">Filtrar</button>
+    <a href="{{ url_for('oas.lista') }}" class="btn btn-gris btn-sm">Limpiar</a>
+  </form>
+
+  {% if oas %}
+  <table>
+    <thead>
+      <tr>
+        <th>N° OA</th>
+        <th>Agricola</th>
+        <th>Tipo</th>
+        <th>F. Emision</th>
+        <th>F. Inicio Aplic.</th>
+        <th>Cuarteles</th>
+        <th>Ha</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for oa in oas %}
+      <tr>
+        <td><strong>{{ oa.num_oa }}</strong></td>
+        <td>{{ oa.agricola.nombre }}</td>
+        <td><span class="text-muted">{{ oa.tipo_oa }}</span></td>
+        <td>{{ oa.fecha_emision.strftime('%d-%m-%Y') }}</td>
+        <td>{{ oa.fecha_inicio_aplicacion.strftime('%d-%m-%Y') }}</td>
+        <td>{{ oa.cuarteles|length }}</td>
+        <td>{{ oa.ha_totales or '-' }}</td>
+        <td><span class="badge badge-{{ oa.estado }}">{{ oa.estado }}</span></td>
+        <td>
+          <div class="gap">
+            <a href="{{ url_for('oas.detalle', oa_id=oa.id) }}" class="btn btn-verde btn-sm">Ver</a>
+            {% if oa.estado == 'borrador' %}
+            <a href="{{ url_for('oas.editar', oa_id=oa.id) }}" class="btn btn-amarillo btn-sm">Editar</a>
+            {% endif %}
+            <a href="{{ url_for('oas.generar_pdf', oa_id=oa.id) }}" class="btn btn-azul btn-sm" target="_blank">PDF</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-muted" style="text-align:center;padding:24px">No hay ordenes de aplicacion. <a href="{{ url_for('oas.nueva') }}">Crear la primera OA</a></p>
+  {% endif %}
+</div>
+{% endblock %}

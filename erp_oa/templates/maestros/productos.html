@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Maestro Productos{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="gap" style="margin-bottom:16px">
+    <h1 style="margin:0">Maestro Productos</h1>
+  </div>
+
+  <form method="get" class="gap" style="margin-bottom:16px">
+    <select name="agricola_id" style="width:180px">
+      <option value="">Todas las agricolas</option>
+      {% for a in agricolas %}
+      <option value="{{ a.id }}" {{ 'selected' if filtro_agricola == a.id|string }}>{{ a.nombre }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-gris btn-sm">Filtrar</button>
+    <a href="{{ url_for('maestros.productos') }}" class="btn btn-gris btn-sm">Limpiar</a>
+  </form>
+
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre Comercial</th>
+        <th>Ingrediente Activo</th>
+        <th>Form.</th>
+        <th>Dosis/100L</th>
+        <th>Banda SAG</th>
+        <th>Carencia Limon</th>
+        <th>Carencia Naranja</th>
+        <th>Carencia Asoex</th>
+        <th>Incompatibilidades</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in productos %}
+      <tr>
+        <td class="text-muted">{{ p.orden_mezcla }}</td>
+        <td><strong>{{ p.nombre_comercial }}</strong></td>
+        <td style="font-size:12px;color:#555">{{ p.ingrediente_activo }}</td>
+        <td>{{ p.formulacion or '-' }}</td>
+        <td><strong>{{ p.dosis_100L|int }} {{ p.unidad_dosis }}/100L</strong></td>
+        <td>
+          {% if p.banda_sag %}
+          <span class="badge" style="background:{% if p.banda_sag=='NOCIVO' %}#f8d7da;color:#842029{% elif p.banda_sag=='CUIDADO' %}#fff3cd;color:#664d03{% else %}#d1e7dd;color:#0f5132{% endif %}">
+            {{ p.banda_sag }}
+          </span>
+          {% else %}-{% endif %}
+        </td>
+        <td>{{ p.carencia_limon or '-' }}</td>
+        <td>{{ p.carencia_naranja or '-' }}</td>
+        <td>{{ p.carencia_asoex or '-' }}</td>
+        <td style="font-size:11px;color:#c0392b">{{ p.incompatibilidades or '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <p class="text-muted mt-1" style="font-size:12px">{{ productos|length }} productos activos</p>
+</div>
+{% endblock %}

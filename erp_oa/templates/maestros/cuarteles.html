@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Maestro Cuarteles{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="gap" style="margin-bottom:16px">
+    <h1 style="margin:0">Maestro Cuarteles</h1>
+  </div>
+
+  <form method="get" class="gap" style="margin-bottom:16px">
+    <select name="agricola_id" style="width:180px">
+      <option value="">Todas las agricolas</option>
+      {% for a in agricolas %}
+      <option value="{{ a.id }}" {{ 'selected' if filtro_agricola == a.id|string }}>{{ a.nombre }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-gris btn-sm">Filtrar</button>
+    <a href="{{ url_for('maestros.cuarteles') }}" class="btn btn-gris btn-sm">Limpiar</a>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Agricola</th>
+        <th>Cuartel</th>
+        <th>Especie</th>
+        <th>Variedad</th>
+        <th>Ha Total</th>
+        <th>Marco</th>
+        <th>Ensayo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in cuarteles %}
+      <tr>
+        <td>{{ c.agricola.nombre }}</td>
+        <td><strong>{{ c.nombre }}</strong></td>
+        <td>{{ c.especie }}</td>
+        <td class="text-muted">{{ c.variedad or '-' }}</td>
+        <td>{{ c.ha_total }}</td>
+        <td class="text-muted">{{ c.marco or '-' }}</td>
+        <td>{% if c.es_ensayo %}<span class="badge" style="background:#fff3cd;color:#664d03">Ensayo</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="text-muted mt-1" style="font-size:12px">{{ cuarteles|length }} cuarteles</p>
+</div>
+{% endblock %}

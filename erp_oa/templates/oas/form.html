@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if oa else 'Nueva' }} OA{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ 'Editar' if oa else 'Nueva' }} Orden de Aplicacion</h1>
+
+  <form method="POST" id="form-oa">
+
+    <!-- BLOQUE 1: Identificacion -->
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Agricola *</label>
+        <select name="agricola_id" id="agricola_id" required onchange="cargarDatos()">
+          <option value="">Seleccionar...</option>
+          {% for a in agricolas %}
+          <option value="{{ a.id }}" {{ 'selected' if oa and oa.agricola_id == a.id }}>{{ a.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tipo OA</label>
+        <select name="tipo_oa" required>
+          <option value="Retroactiva" {{ 'selected' if not oa or oa.tipo_oa == 'Retroactiva' }}>Retroactiva</option>
+          <option value="Proactiva"   {{ 'selected' if oa and oa.tipo_oa == 'Proactiva' }}>Proactiva</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Fecha Inicio Aplicacion *</label>
+        <input type="date" name="fecha_inicio_aplicacion" required
+               value="{{ oa.fecha_inicio_aplicacion.isoformat() if oa else '' }}">
+      </div>
+      <div class="form-group">
+        <label>Tipo de Aplicacion</label>
+        <select name="tipo_aplicacion" id="tipo_aplic" onchange="sugerirMojamiento()">
+          <option value="MOSQ"  {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'MOSQ' }}>Control mosquita blanca (4.500 L/ha)</option>
+          <option value="CHANCH"{{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'CHANCH' }}>Control chanchito blanco (5.000 L/ha)</option>
+          <option value="LAV"   {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'LAV' }}>Lavado con detergente (9.000 L/ha)</option>
+          <option value="FERT"  {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'FERT' }}>Fertilizante foliar (2.000 L/ha)</option>
+          <option value="HERB"  {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'HERB' }}>Herbicida (3.200 L/ha)</option>
+          <option value="INSEC" {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'INSEC' }}>Insecticida / Acaricida (4.000 L/ha)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mojamiento (L/ha) <span class="text-muted" style="font-weight:normal">← editable</span></label>
+        <input type="number" name="mojamiento_Lha" id="mojamiento" min="500" max="15000" required
+               value="{{ oa.mojamiento_Lha if oa else 4000 }}" oninput="recalcular()">
+      </div>
+      <div class="form-group">
+        <label>Capacidad Estanque (L)</label>
+        <input type="number" name="capacidad_estanque" id="estanque" required min="10" max="20000"
+               value="{{ oa.capacidad_estanque if oa else 2000 }}" oninput="recalcular()">
+      </div>
+      <div class="form-group">
+        <label>Especie</label>
+        <select name="especie">
+          <option value="">Seleccionar...</option>
+          <option value="Limon"     {{ 'selected' if oa and oa.especie == 'Limon' }}>Limon</option>
+          <option value="Naranja"   {{ 'selected' if oa and oa.especie == 'Naranja' }}>Naranja</option>
+          <option value="Mandarina" {{ 'selected' if oa and oa.especie == 'Mandarina' }}>Mandarina</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Estado Fenologico</label>
+        <select name="estado_fenologico">
+          <option value="">Seleccionar...</option>
+          <option value="Desarrollo yemas"   {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo yemas' }}>Desarrollo yemas (BBCH00)</option>
+          <option value="Desarrollo hojas"   {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo hojas' }}>Desarrollo hojas (BBCH10)</option>
+          <option value="Aparicion boton floral" {{ 'selected' if oa and oa.estado_fenologico == 'Aparicion boton floral' }}>Aparicion boton floral (BBCH51)</option>
+          <option value="Floracion"          {{ 'selected' if oa and oa.estado_fenologico == 'Floracion' }}>Floracion (BBCH60)</option>
+          <option value="Desarrollo fruto"   {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo fruto' }}>Desarrollo fruto (BBCH70)</option>
+          <option value="Maduracion"         {{ 'selected' if oa and oa.estado_fenologico == 'Maduracion' }}>Maduracion (BBCH80)</option>
+          <option value="Senescencia"        {{ 'selected' if oa and oa.estado_fenologico == 'Senescencia' }}>Senescencia (BBCH89)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Maquinaria</label>
+        <select name="tipo_maquina">
+          <option value="">Seleccionar...</option>
+          <option value="Pulverizadora 2000L" {{ 'selected' if oa and oa.tipo_maquina == 'Pulverizadora 2000L' }}>Pulverizadora 2000L</option>
+          <option value="Pulverizadora 1500L" {{ 'selected' if oa and oa.tipo_maquina == 'Pulverizadora 1500L' }}>Pulverizadora 1500L</option>
+          <option value="Piton 1500L"         {{ 'selected' if oa and oa.tipo_maquina == 'Piton 1500L' }}>Piton 1500L</option>
+          <option value="Mochila espaldera"   {{ 'selected' if oa and oa.tipo_maquina == 'Mochila espaldera' }}>Mochila espaldera</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mercado Destino</label>
+        <input type="text" name="mercado_destino" placeholder="China, UE, Nacional..."
+               value="{{ oa.mercado_destino if oa else '' }}">
+      </div>
+      <div class="form-group">
+        <label>Agronomo Responsable</label>
+        <input type="text" name="agronomo" value="{{ oa.agronomo if oa else '' }}">
+      </div>
+    </div>
+
+    <!-- BLOQUE 2: Productos -->
+    <h3 style="margin-top:20px">Productos</h3>
+    <div style="overflow-x:auto">
+      <table id="tabla-productos">
+        <thead>
+          <tr>
+            <th>Nombre Comercial</th>
+            <th>Ingrediente Activo</th>
+            <th style="width:90px">Dosis/100L</th>
+            <th style="width:70px">Unidad</th>
+            <th style="width:100px">Dosis/ha</th>
+            <th style="width:110px">Dosis/Maquinada</th>
+            <th>Objetivo</th>
+            <th style="width:30px"></th>
+          </tr>
+        </thead>
+        <tbody id="productos-tbody">
+          {% if oa %}
+            {% for op in oa.productos %}
+            <tr class="fila-producto"
+                data-pid="{{ op.producto_id }}"
+                data-ia="{{ op.producto.ingrediente_activo }}"
+                data-dosis="{{ op.dosis_100L }}"
+                data-unidad="{{ op.unidad }}"
+                data-objetivo="{{ op.objetivo or '' }}">
+            </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    <button type="button" class="btn btn-gris btn-sm mt-1" onclick="agregarProducto()">+ Agregar producto</button>
+
+    <!-- BLOQUE 3: Cuarteles -->
+    <h3 style="margin-top:20px">Cuarteles</h3>
+    <div id="cuarteles-lista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+      <p class="text-muted" id="msg-cuarteles">Selecciona una agricola para cargar los cuarteles.</p>
+    </div>
+    <p id="superficie-total" class="text-verde mt-1"></p>
+
+    <div class="form-group" style="margin-top:20px">
+      <label>Indicaciones</label>
+      <textarea name="indicaciones" rows="3">{{ oa.indicaciones if oa else '' }}</textarea>
+    </div>
+
+    <div class="gap mt-2">
+      <button type="submit" class="btn btn-verde">Guardar OA</button>
+      <a href="{{ url_for('oas.lista') }}" class="btn btn-gris">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+const MOJAMIENTOS = {MOSQ:4500, CHANCH:5000, LAV:9000, FERT:2000, HERB:3200, INSEC:4000};
+const MOJ = () => parseInt(document.getElementById('mojamiento').value) || 4000;
+const EST = () => parseInt(document.getElementById('estanque').value) || 2000;
+
+// Datos pre-cargados para edicion
+const PROD_EXISTENTES = [
+  {% if oa %}{% for op in oa.productos %}
+  {id:{{ op.producto_id }}, ia:"{{ op.producto.ingrediente_activo }}", dosis:{{ op.dosis_100L }}, unidad:"{{ op.unidad }}", objetivo:"{{ op.objetivo or '' }}"},
+  {% endfor %}{% endif %}
+];
+const CUART_EXISTENTES = [
+  {% if oa %}{% for oc in oa.cuarteles %}
+  {id:{{ oc.cuartel_id }}, ha:{{ oc.ha_efectivas }}},
+  {% endfor %}{% endif %}
+];
+
+function sugerirMojamiento() {
+  const tipo = document.getElementById('tipo_aplic').value;
+  document.getElementById('mojamiento').value = MOJAMIENTOS[tipo] || 4000;
+  recalcular();
+}
+
+function recalcular() {
+  document.querySelectorAll('.fila-producto').forEach(fila => {
+    const dosis = parseFloat(fila.querySelector('.dosis-input').value) || 0;
+    const dosisHa  = Math.round(dosis * MOJ() / 100 * 100) / 100;
+    const dosisMaq = Math.round(dosis * EST() / 100 * 100) / 100;
+    const unidad = fila.querySelector('.unidad-select').value;
+    fila.querySelector('.dosis-ha').textContent  = dosisHa  + ' ' + unidad + '/ha';
+    fila.querySelector('.dosis-maq').textContent = dosisMaq + ' ' + unidad;
+  });
+  calcularSuperficie();
+}
+
+function agregarProducto(data={}) {
+  const prods = window._productos || [];
+  const opts = prods.map(p =>
+    `<option value="${p.id}" data-ia="${p.ia}" data-dosis="${p.dosis_100L}" data-unidad="${p.unidad}"
+      ${data.id == p.id ? 'selected' : ''}>${p.nombre}</option>`
+  ).join('');
+  const tr = document.createElement('tr');
+  tr.className = 'fila-producto';
+  tr.innerHTML = `
+    <td><select name="producto_id[]" class="prod-select" style="width:100%" onchange="selProducto(this)">${opts}</select></td>
+    <td class="ia-cell" style="font-size:12px;color:#555">${data.ia||''}</td>
+    <td><input type="number" name="dosis_100L[]" class="dosis-input" step="0.01" style="width:80px"
+        value="${data.dosis||''}" oninput="recalcular()"></td>
+    <td><select name="unidad[]" class="unidad-select" style="width:60px" onchange="recalcular()">
+        <option value="cc" ${data.unidad=='cc'?'selected':''}>cc</option>
+        <option value="g"  ${data.unidad=='g'?'selected':''}>g</option>
+    </select></td>
+    <td class="dosis-ha">-</td>
+    <td class="dosis-maq">-</td>
+    <td><input type="text" name="objetivo[]" placeholder="Objetivo" style="width:100%"
+        value="${data.objetivo||''}"></td>
+    <td><button type="button" onclick="this.closest('tr').remove();recalcular()"
+        style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:16px">x</button></td>
+  `;
+  document.getElementById('productos-tbody').appendChild(tr);
+  recalcular();
+}
+
+function selProducto(sel) {
+  const opt = sel.selectedOptions[0];
+  const fila = sel.closest('tr');
+  fila.querySelector('.ia-cell').textContent     = opt.dataset.ia || '';
+  fila.querySelector('.dosis-input').value       = opt.dataset.dosis || '';
+  fila.querySelector('.unidad-select').value     = opt.dataset.unidad || 'cc';
+  recalcular();
+}
+
+async function cargarDatos() {
+  const id = document.getElementById('agricola_id').value;
+  if (!id) return;
+
+  const [rProds, rCuart] = await Promise.all([
+    fetch(`/maestros/api/productos/${id}`),
+    fetch(`/maestros/api/cuarteles/${id}`)
+  ]);
+  window._productos  = await rProds.json();
+  window._cuarteles  = await rCuart.json();
+
+  // Reconstruir tabla de productos
+  const tbody = document.getElementById('productos-tbody');
+  tbody.innerHTML = '';
+  if (PROD_EXISTENTES.length > 0) {
+    PROD_EXISTENTES.forEach(p => agregarProducto(p));
+  } else {
+    agregarProducto();
+  }
+
+  // Renderizar cuarteles
+  const cont = document.getElementById('cuarteles-lista');
+  document.getElementById('msg-cuarteles')?.remove();
+  cont.innerHTML = window._cuarteles.map(c => `
+    <label class="cuartel-card" style="background:white;border:1px solid #ddd;border-radius:4px;padding:8px 10px;cursor:pointer;display:block">
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="checkbox" class="chk-cuartel" data-id="${c.id}" data-ha="${c.ha_total}"
+               onchange="toggleHaInput(this);calcularSuperficie()"
+               ${CUART_EXISTENTES.find(e=>e.id==c.id)?'checked':''}>
+        <span><strong>${c.nombre}</strong>${c.es_ensayo?' <small style="color:#e67e22">[ensayo]</small>':''}</span>
+      </div>
+      <div style="font-size:12px;color:#555;margin:2px 0 0 20px">${c.especie} &middot; ${c.ha_total} ha</div>
+      <div class="ha-row" style="margin-top:6px;margin-left:20px;display:${CUART_EXISTENTES.find(e=>e.id==c.id)?'block':'none'}">
+        <input type="number" class="ha-input" placeholder="ha efectivas" step="0.01"
+               value="${(CUART_EXISTENTES.find(e=>e.id==c.id)||{}).ha||c.ha_total}"
+               style="width:100px;padding:4px 6px;font-size:12px" oninput="calcularSuperficie()">
+      </div>
+    </label>
+  `).join('');
+  calcularSuperficie();
+}
+
+function toggleHaInput(chk) {
+  const haRow = chk.closest('.cuartel-card').querySelector('.ha-row');
+  const haInput = haRow.querySelector('.ha-input');
+  if (chk.checked) {
+    haRow.style.display = 'block';
+  } else {
+    haRow.style.display = 'none';
+    haInput.value = chk.dataset.ha;
+  }
+}
+
+function calcularSuperficie() {
+  const checks = document.querySelectorAll('.chk-cuartel:checked');
+  let total = 0;
+  checks.forEach(c => {
+    const haInput = c.closest('.cuartel-card').querySelector('.ha-input');
+    total += parseFloat(haInput.value || c.dataset.ha || 0);
+  });
+  document.getElementById('superficie-total').textContent =
+    checks.length ? `Superficie total: ${total.toFixed(2)} ha · ${checks.length} cuarteles seleccionados` : '';
+}
+
+document.getElementById('form-oa').addEventListener('submit', function(e) {
+  // Limpiar hidden inputs previos
+  this.querySelectorAll('.hidden-cuartel').forEach(el => el.remove());
+
+  const checks = document.querySelectorAll('.chk-cuartel:checked');
+  checks.forEach(chk => {
+    const card = chk.closest('.cuartel-card');
+    const ha = card.querySelector('.ha-input').value || chk.dataset.ha;
+
+    const idInput = document.createElement('input');
+    idInput.type = 'hidden'; idInput.name = 'cuartel_id[]'; idInput.value = chk.dataset.id;
+    idInput.className = 'hidden-cuartel';
+    this.appendChild(idInput);
+
+    const haInput = document.createElement('input');
+    haInput.type = 'hidden'; haInput.name = 'ha_efectivas[]'; haInput.value = ha;
+    haInput.className = 'hidden-cuartel';
+    this.appendChild(haInput);
+
+    const fechaInput = document.createElement('input');
+    fechaInput.type = 'hidden'; fechaInput.name = 'fecha_aplicacion[]'; fechaInput.value = '';
+    fechaInput.className = 'hidden-cuartel';
+    this.appendChild(fechaInput);
+  });
+});
+
+window.onload = () => {
+  const aid = document.getElementById('agricola_id').value;
+  if (aid) cargarDatos();
+};
+</script>
+{% endblock %}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 15mm 12mm; }
+  body { font-family: Arial, sans-serif; font-size: 9pt; color: #000; }
+
+  .titulo { text-align: center; font-size: 13pt; font-weight: bold; margin-bottom: 8px;
+             border: 2px solid #000; padding: 6px; }
+
+  .cabecera { display: grid; grid-template-columns: 60% 40%; gap: 8px; margin-bottom: 8px; }
+  .campo { display: flex; gap: 6px; margin-bottom: 3px; align-items: baseline; }
+  .campo label { font-weight: bold; white-space: nowrap; min-width: 140px; }
+  .campo .val { border-bottom: 1px solid #999; flex: 1; min-width: 60px; }
+
+  .alerta-ph { background: #ffff00; font-weight: bold; font-size: 8pt; padding: 3px 6px; margin: 6px 0; }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  th { background: #404040; color: white; font-size: 8pt; padding: 4px 5px; text-align: center; border: 1px solid #000; }
+  td { font-size: 8.5pt; padding: 3px 5px; text-align: center; border: 1px solid #ccc; background: #ffff99; }
+  td.nombre { text-align: left; font-weight: bold; }
+
+  .cuarteles-box { border: 1px solid #000; padding: 5px 8px; margin-bottom: 6px; font-size: 8pt; }
+  .cuarteles-box strong { display: block; margin-bottom: 3px; }
+
+  .considerar { font-size: 8pt; margin-bottom: 6px; }
+  .considerar .fila { display: flex; gap: 8px; margin-bottom: 2px; align-items: baseline; }
+  .considerar label { font-weight: bold; width: 160px; flex-shrink: 0; }
+  .considerar .val { border-bottom: 1px solid #999; flex: 1; color: #00c; }
+
+  .firmas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 16px; text-align: center; font-size: 8pt; }
+  .firma-linea { border-top: 1px solid #000; padding-top: 4px; margin-top: 24px; }
+
+  .nota-legal { font-size: 7.5pt; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div class="titulo">ORDEN DE APLICACION DE AGROCOMPLEMENTOS</div>
+
+<div class="cabecera">
+  <div>
+    <div class="campo"><label>Especie:</label> <span class="val">{{ oa.especie or '' }}</span></div>
+    <div class="campo"><label>Estado Fenologico:</label> <span class="val">{{ oa.estado_fenologico or '' }}</span></div>
+    <div class="campo"><label>Fecha Emision:</label> <span class="val">{{ oa.fecha_emision.strftime('%d-%m-%Y') }}</span></div>
+    <div class="campo"><label>Fecha desde:</label> <span class="val">{{ oa.fecha_desde.strftime('%d-%m-%Y') }}</span></div>
+    <div class="campo">
+      <label>Fecha inicio aplicacion:</label>
+      <span class="val">{{ oa.fecha_inicio_aplicacion.strftime('%d-%m-%Y') }}
+        {% if (oa.fecha_inicio_aplicacion - oa.fecha_emision).days < 2 %}
+        <strong style="color:red"> MENOS DE 2 DIAS</strong>{% endif %}
+      </span>
+    </div>
+  </div>
+  <div>
+    <div class="campo"><label>Codigo:</label> <span class="val">R03/P02</span></div>
+    <div class="campo"><label>Productor:</label> <span class="val">San Pedro SpA</span></div>
+    <div class="campo"><label>Predio:</label> <span class="val">Campo {{ oa.agricola.nombre }}</span></div>
+    <div class="campo"><label>Localidad:</label> <span class="val">El Romero, La Serena</span></div>
+    <div class="campo"><label>N&#176; Orden:</label> <span class="val"><strong>{{ oa.num_oa }}</strong></span></div>
+    <div class="campo"><label>Tipo:</label> <span class="val">{{ oa.tipo_oa }}</span></div>
+  </div>
+</div>
+
+<div class="alerta-ph">*Importante regular pH al agua de aplicacion &gt;7.0 — pH ideal 5.5-6.5</div>
+
+<!-- Tabla productos -->
+<table>
+  <thead>
+    <tr>
+      <th style="width:18%;text-align:left">Nombre comercial</th>
+      <th style="width:16%">Ingrediente activo</th>
+      <th style="width:12%">Objetivo</th>
+      <th style="width:10%">Dosis/100 L</th>
+      <th style="width:10%">Dosis/Ha</th>
+      <th style="width:11%">Nec. maquinada</th>
+      <th style="width:11%">Nec. Total</th>
+      <th style="width:6%">Carencia Etiq.</th>
+      <th style="width:6%">Carencia Asoex</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for op in oa.productos %}
+    {% set p = op.producto %}
+    {% set dosis_ha  = (op.dosis_100L * oa.mojamiento_Lha / 100)|round(2) %}
+    {% set dosis_maq = (op.dosis_100L * oa.capacidad_estanque / 100)|round(2) %}
+    {% set nec_total = (dosis_ha * (oa.ha_totales or 0))|round(2) %}
+    <tr>
+      <td class="nombre">{{ p.nombre_comercial }}</td>
+      <td>{{ p.ingrediente_activo }}</td>
+      <td>{{ op.objetivo or '' }}</td>
+      <td><strong>{{ op.dosis_100L|int }} {{ op.unidad }}/100L</strong></td>
+      <td>
+        {% if op.unidad == 'g' %}{{ (dosis_ha/1000)|round(2) }} kg
+        {% else %}{{ dosis_ha }} cc{% endif %}
+      </td>
+      <td>
+        {% if op.unidad == 'g' %}{{ (dosis_maq/1000)|round(2) }} kg
+        {% else %}{{ dosis_maq }} cc{% endif %}
+      </td>
+      <td>
+        {% if oa.ha_totales %}
+          {% if op.unidad == 'g' %}{{ (nec_total/1000)|round(2) }} kg
+          {% elif nec_total >= 1000 %}{{ (nec_total/1000)|round(2) }} L
+          {% else %}{{ nec_total }} cc{% endif %}
+        {% else %}-{% endif %}
+      </td>
+      <td>
+        {% if oa.especie == 'Limon' %}{{ p.carencia_limon or '-' }}
+        {% elif oa.especie == 'Naranja' %}{{ p.carencia_naranja or '-' }}
+        {% elif oa.especie == 'Mandarina' %}{{ p.carencia_mandarina or '-' }}
+        {% else %}-{% endif %}
+      </td>
+      <td>{{ p.carencia_asoex or '-' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Cuarteles -->
+<div class="cuarteles-box">
+  <strong>Sectores / Cuarteles
+    ({{ oa.cuarteles|length }} cuarteles
+    {% if oa.ha_totales %} &middot; {{ oa.ha_totales }} ha{% endif %}):
+  </strong>
+  {{ oa.cuarteles|map(attribute='cuartel')|map(attribute='nombre')|list|join(', ') }}
+</div>
+
+<!-- Considerar -->
+<div class="considerar">
+  <strong>Considerar:</strong>
+  <div class="fila"><label>Mojamiento / ha:</label> <span class="val">{{ oa.mojamiento_Lha }} L/ha &nbsp;*Segun TRV</span></div>
+  <div class="fila"><label>Capacidad estanque:</label> <span class="val">{{ oa.capacidad_estanque }} L</span></div>
+  <div class="fila"><label>Forma de aplicacion:</label> <span class="val">{{ oa.tipo_maquina or 'PULVERIZADORA' }}</span></div>
+  <div class="fila"><label>Tiempo de reingreso:</label>
+    <span class="val">24 HORAS (politica interna)
+      &nbsp;&nbsp;<strong>48 hrs. Mujeres embarazadas/lactancia</strong>
+    </span>
+  </div>
+  <div class="fila"><label>Mercado destino:</label> <span class="val">{{ oa.mercado_destino or 'NACIONAL/EXPORTACION' }}</span></div>
+  {% if oa.indicaciones %}
+  <div class="fila"><label>Indicaciones:</label> <span class="val">{{ oa.indicaciones }}</span></div>
+  {% endif %}
+</div>
+
+<p class="nota-legal">
+  * SE PROHIBE la aplicacion de productos quimicos en areas de conservacion, cursos de agua, pasos de fauna u otras areas de interes ecologico.<br>
+  * Verificar velocidad y presion de trabajo en la tabla de calibraciones — USE SIEMPRE SU EQUIPO DE PROTECCION Y LEA LA ETIQUETA.
+</p>
+
+<!-- Firmas -->
+<div class="firmas">
+  <div>
+    <div class="firma-linea">Responsable tecnico<br><strong>{{ oa.agronomo or '' }}</strong></div>
+  </div>
+  <div>
+    <div class="firma-linea">Emisor</div>
+  </div>
+  <div>
+    <div class="firma-linea">Recibe</div>
+  </div>
+</div>
+
+</body>
+</html>
