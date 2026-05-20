@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análisis CPA vs CSP — San Pedro SpA</title>
+  <style>
+    /* ===================== VARIABLES ===================== */
+    :root {
+      --verde-oscuro:   #1a4a1a;
+      --verde-medio:    #2d6a2d;
+      --verde-claro:    #4a9a4a;
+      --verde-suave:    #d4edda;
+      --verde-fondo:    #f0f7f0;
+      --gris-oscuro:    #2c2c2c;
+      --gris-medio:     #555555;
+      --gris-claro:     #dddddd;
+      --gris-fondo:     #f5f5f5;
+      --blanco:         #ffffff;
+      --rojo-suave:     #fde8e8;
+      --amarillo-suave: #fff8e1;
+      --azul-suave:     #e8f4f8;
+      --borde-radio:    6px;
+    }
+
+    /* ===================== BASE ===================== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 11pt;
+      color: var(--gris-oscuro);
+      background: var(--gris-fondo);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 210mm;
+      margin: 0 auto;
+      background: var(--blanco);
+    }
+
+    /* ===================== PORTADA ===================== */
+    .portada {
+      background: linear-gradient(160deg, var(--verde-oscuro) 0%, var(--verde-medio) 60%, var(--verde-claro) 100%);
+      color: var(--blanco);
+      padding: 60px 50px 50px;
+      min-height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portada::before {
+      content: '';
+      position: absolute;
+      right: -40px; top: -40px;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .portada::after {
+      content: '';
+      position: absolute;
+      right: 60px; bottom: -60px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .portada-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .portada h1 {
+      font-size: 26pt;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .portada h2 {
+      font-size: 14pt;
+      font-weight: 400;
+      opacity: 0.85;
+      margin-bottom: 20px;
+    }
+
+    .portada-meta {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .portada-meta-item {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--borde-radio);
+      padding: 10px 18px;
+    }
+
+    .portada-meta-item .label {
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      display: block;
+    }
+
+    .portada-meta-item .valor {
+      font-size: 11pt;
+      font-weight: 600;
+    }
+
+    /* ===================== ÍNDICE ===================== */
+    .indice {
+      background: var(--verde-fondo);
+      border-left: 4px solid var(--verde-claro);
+      padding: 24px 30px;
+      margin: 0;
+    }
+
+    .indice h3 {
+      color: var(--verde-oscuro);
+      font-size: 10pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .indice ol {
+      padding-left: 20px;
+    }
+
+    .indice li {
+      margin-bottom: 4px;
+      font-size: 10pt;
+      color: var(--verde-medio);
+    }
+
+    .indice li a {
+      color: var(--verde-oscuro);
+      text-decoration: none;
+    }
+
+    .indice li a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===================== SECCIONES ===================== */
+    .seccion {
+      padding: 32px 40px;
+      border-bottom: 1px solid var(--gris-claro);
+    }
+
+    .seccion:last-child { border-bottom: none; }
+
+    .seccion-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--verde-claro);
+    }
+
+    .seccion-numero {
+      background: var(--verde-medio);
+      color: var(--blanco);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 13pt;
+      flex-shrink: 0;
+    }
+
+    .seccion-titulo {
+      font-size: 15pt;
+      font-weight: 700;
+      color: var(--verde-oscuro);
+    }
+
+    .seccion-subtitulo {
+      font-size: 10pt;
+      color: var(--gris-medio);
+      margin-top: 2px;
+    }
+
+    /* ===================== TABLAS ===================== */
+    .tabla-wrap {
+      overflow-x: auto;
+      border-radius: var(--borde-radio);
+      border: 1px solid var(--gris-claro);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10pt;
+    }
+
+    thead tr {
+      background: var(--verde-oscuro);
+      color: var(--blanco);
+    }
+
+    thead th {
+      padding: 11px 13px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 9.5pt;
+      letter-spacing: 0.3px;
+    }
+
+    tbody tr:nth-child(even) { background: var(--verde-fondo); }
+    tbody tr:nth-child(odd)  { background: var(--blanco); }
+
+    tbody tr:hover { background: var(--verde-suave); }
+
+    tbody td {
+      padding: 9px 13px;
+      vertical-align: top;
+      border-bottom: 1px solid var(--gris-claro);
+    }
+
+    .col-cat   { font-weight: 600; color: var(--verde-oscuro); width: 16%; }
+    .col-cpa   { width: 18%; }
+    .col-csp   { width: 22%; }
+    .col-erp   { width: 22%; }
+    .col-eval  { width: 22%; text-align: center; }
+
+    /* ===================== BADGES ===================== */
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 8.5pt;
+      font-weight: 600;
+    }
+
+    .badge-verde  { background: #d4edda; color: #1a4a1a; }
+    .badge-amarillo { background: #fff8e1; color: #7a5a00; }
+    .badge-rojo   { background: #fde8e8; color: #7a1a1a; }
+    .badge-azul   { background: #e8f4f8; color: #1a3a5a; }
+    .badge-gris   { background: var(--gris-claro); color: var(--gris-oscuro); }
+
+    /* ===================== CALLOUTS ===================== */
+    .callout {
+      border-radius: var(--borde-radio);
+      padding: 16px 20px;
+      margin: 16px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+
+    .callout-critico {
+      background: #fde8e8;
+      border-left: 4px solid #c0392b;
+    }
+
+    .callout-aviso {
+      background: #fff8e1;
+      border-left: 4px solid #e67e22;
+    }
+
+    .callout-ok {
+      background: var(--verde-suave);
+      border-left: 4px solid var(--verde-claro);
+    }
+
+    .callout-info {
+      background: var(--azul-suave);
+      border-left: 4px solid #2980b9;
+    }
+
+    .callout h4 {
+      font-size: 11pt;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .callout p, .callout li {
+      font-size: 10pt;
+      line-height: 1.55;
+    }
+
+    .callout ul { padding-left: 18px; margin-top: 6px; }
+
+    /* ===================== FASES ===================== */
+    .fases-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 8px;
+    }
+
+    .fase-card {
+      border: 1px solid var(--gris-claro);
+      border-radius: var(--borde-radio);
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .fase-header {
+      padding: 12px 16px;
+      color: var(--blanco);
+      font-weight: 700;
+      font-size: 10.5pt;
+    }
+
+    .fase-1 .fase-header { background: #c0392b; }
+    .fase-2 .fase-header { background: #e67e22; }
+    .fase-3 .fase-header { background: var(--verde-medio); }
+    .fase-4 .fase-header { background: var(--verde-oscuro); }
+
+    .fase-body {
+      padding: 14px 16px;
+      font-size: 9.5pt;
+    }
+
+    .fase-body strong { color: var(--verde-oscuro); }
+
+    .fase-body ul { padding-left: 16px; margin: 6px 0; }
+    .fase-body li { margin-bottom: 3px; }
+
+    .fase-tags {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .tag {
+      background: var(--verde-fondo);
+      border: 1px solid var(--verde-claro);
+      color: var(--verde-oscuro);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+
+    /* ===================== ARQUITECTURA ===================== */
+    .arq-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin: 20px 0;
+      border: 1px solid var(--gris-claro);
+      border-radius: var(--borde-radio);
+      overflow: hidden;
+    }
+
+    .arq-nodo {
+      padding: 16px 14px;
+      text-align: center;
+      position: relative;
+    }
+
+    .arq-nodo:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -10px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: var(--verde-claro);
+      z-index: 2;
+    }
+
+    .arq-nodo:nth-child(odd) { background: var(--verde-fondo); }
+    .arq-nodo:nth-child(even) { background: var(--blanco); }
+
+    .arq-nodo .arq-icon { font-size: 26px; margin-bottom: 6px; display: block; }
+    .arq-nodo .arq-nombre { font-weight: 700; font-size: 10pt; color: var(--verde-oscuro); }
+    .arq-nodo .arq-desc { font-size: 8.5pt; color: var(--gris-medio); margin-top: 4px; }
+
+    /* ===================== CONTINGENCIA ===================== */
+    .contingencia-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    .cont-card {
+      border: 1px solid var(--gris-claro);
+      border-radius: var(--borde-radio);
+      overflow: hidden;
+    }
+
+    .cont-header {
+      background: var(--verde-oscuro);
+      color: var(--blanco);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 10pt;
+    }
+
+    .cont-body {
+      padding: 14px 16px;
+      font-size: 9.5pt;
+      line-height: 1.5;
+    }
+
+    .formula-block {
+      background: #1e1e1e;
+      color: #d4edda;
+      font-family: 'Courier New', monospace;
+      font-size: 9pt;
+      padding: 10px 14px;
+      border-radius: 4px;
+      margin: 8px 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* ===================== GUÍA ESTUDIO ===================== */
+    .estudio-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .estudio-item {
+      border: 1px solid var(--gris-claro);
+      border-radius: var(--borde-radio);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 50px auto 1fr 100px;
+      align-items: stretch;
+    }
+
+    .est-prioridad {
+      background: var(--verde-oscuro);
+      color: var(--blanco);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16pt; font-weight: 700;
+    }
+
+    .est-icon {
+      background: var(--verde-fondo);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      padding: 0 14px;
+    }
+
+    .est-contenido {
+      padding: 12px 14px;
+    }
+
+    .est-contenido h4 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: var(--verde-oscuro);
+      margin-bottom: 3px;
+    }
+
+    .est-contenido .por-que {
+      font-size: 9.5pt;
+      color: var(--gris-medio);
+      margin-bottom: 4px;
+    }
+
+    .est-contenido .recurso {
+      font-size: 9pt;
+      color: #2980b9;
+    }
+
+    .est-tiempo {
+      background: var(--gris-fondo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 0 12px;
+      text-align: center;
+      border-left: 1px solid var(--gris-claro);
+    }
+
+    .est-tiempo .horas { font-size: 14pt; font-weight: 700; color: var(--verde-medio); }
+    .est-tiempo .horas-label { font-size: 8pt; color: var(--gris-medio); }
+
+    /* ===================== COLUMNAS CSP ===================== */
+    .chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 12px 0;
+    }
+
+    .chip {
+      background: var(--verde-fondo);
+      border: 1px solid #b8d8b8;
+      color: var(--verde-oscuro);
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 8.5pt;
+    }
+
+    .chip-cpa {
+      background: #fff8e1;
+      border-color: #ffe082;
+      color: #7a5a00;
+    }
+
+    .chip-extra {
+      background: var(--azul-suave);
+      border-color: #90caf9;
+      color: #1a3a5a;
+    }
+
+    /* ===================== FOOTER ===================== */
+    .footer {
+      background: var(--verde-oscuro);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 18px 20px;
+      font-size: 8.5pt;
+    }
+
+    .footer strong { color: var(--blanco); }
+
+    /* ===================== UTILIDADES ===================== */
+    h3.sub {
+      font-size: 12pt;
+      color: var(--verde-oscuro);
+      margin: 20px 0 10px;
+      padding-left: 10px;
+      border-left: 3px solid var(--verde-claro);
+    }
+
+    p { margin-bottom: 10px; }
+    ul, ol { padding-left: 20px; margin-bottom: 10px; }
+    li { margin-bottom: 4px; }
+
+    .highlight { background: #ffffcc; padding: 1px 4px; border-radius: 3px; }
+
+    .text-verde { color: var(--verde-medio); }
+    .text-rojo  { color: #c0392b; }
+    .text-naranja { color: #e67e22; }
+
+    .separador {
+      border: none;
+      border-top: 2px dashed var(--gris-claro);
+      margin: 20px 0;
+    }
+
+    /* ===================== PRINT ===================== */
+    @media print {
+      body { background: white; font-size: 10pt; }
+      .page { max-width: 100%; box-shadow: none; }
+
+      .portada {
+        background: var(--verde-oscuro) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      thead tr {
+        background: var(--verde-oscuro) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .seccion { page-break-inside: avoid; }
+      .fase-card { page-break-inside: avoid; }
+      .estudio-item { page-break-inside: avoid; }
+      .callout { page-break-inside: avoid; }
+
+      .seccion-header { page-break-after: avoid; }
+
+      a { color: inherit; text-decoration: none; }
+
+      .fases-grid { grid-template-columns: 1fr 1fr; }
+      .arq-grid   { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @page {
+      size: A4;
+      margin: 15mm 12mm;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============================================================
+       PORTADA
+  ============================================================ -->
+  <div class="portada" id="portada">
+    <span class="portada-icon">🌿</span>
+    <h1>Análisis CPA vs CSP</h1>
+    <h2>Cuaderno de Plaguicidas SAG · Cuaderno de Seguimiento de Plagas · ERP Órdenes de Aplicación</h2>
+
+    <div class="portada-meta">
+      <div class="portada-meta-item">
+        <span class="label">Empresa</span>
+        <span class="valor">San Pedro SpA</span>
+      </div>
+      <div class="portada-meta-item">
+        <span class="label">País / Región</span>
+        <span class="valor">Chile — Sector Agrícola Cítricos</span>
+      </div>
+      <div class="portada-meta-item">
+        <span class="label">Fecha de análisis</span>
+        <span class="valor">Mayo 2026</span>
+      </div>
+      <div class="portada-meta-item">
+        <span class="label">Versión</span>
+        <span class="valor">1.0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ÍNDICE
+  ============================================================ -->
+  <div class="indice">
+    <h3>📋 Índice de contenidos</h3>
+    <ol>
+      <li><a href="#sec-comparativa">Comparativa CPA vs CSP vs ERP OA</a></li>
+      <li><a href="#sec-hallazgo">Hallazgo crítico — Campo n° OA vacío</a></li>
+      <li><a href="#sec-recomendacion">Recomendación — Arquitectura óptima</a></li>
+      <li><a href="#sec-plan">Plan de acción en 4 fases</a></li>
+      <li><a href="#sec-contingencia">Contingencia Excel / Google Sheets</a></li>
+      <li><a href="#sec-guia">Guía de estudio para el operador</a></li>
+    </ol>
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 1 — COMPARATIVA
+  ============================================================ -->
+  <div class="seccion" id="sec-comparativa">
+    <div class="seccion-header">
+      <div class="seccion-numero">1</div>
+      <div>
+        <div class="seccion-titulo">Comparativa CPA vs CSP vs ERP OA</div>
+        <div class="seccion-subtitulo">Evaluación por categoría de cumplimiento y funcionalidad</div>
+      </div>
+    </div>
+
+    <p>
+      El <strong>CPA (Cuaderno de Plaguicidas y Agroquímicos)</strong> es el registro mínimo exigido por el SAG.
+      El <strong>CSP (Cuaderno de Seguimiento de Plagas)</strong> es el instrumento de trabajo diario en Excel con 55 columnas.
+      El <strong>ERP OA</strong> es el sistema interno de Órdenes de Aplicación que debe articular ambos.
+      La tabla siguiente evalúa cada categoría en los tres instrumentos.
+    </p>
+
+    <h3 class="sub">1.1 Columnas del CSP (55 campos)</h3>
+
+    <p>Campos que <strong>coinciden con el CPA</strong> (mínimo SAG) <span class="chip chip-cpa">en amarillo</span> y campos <strong>adicionales</strong> del CSP <span class="chip chip-extra">en azul</span>:</p>
+
+    <div class="chips-wrap">
+      <span class="chip chip-cpa">Fecha aplicación</span>
+      <span class="chip chip-extra">Aplicación por programa (SI/NO)</span>
+      <span class="chip">n° OA</span>
+      <span class="chip chip-extra">Fecha inicio</span>
+      <span class="chip chip-extra">Fecha término</span>
+      <span class="chip chip-extra">Hora inicio</span>
+      <span class="chip chip-extra">Hora término</span>
+      <span class="chip chip-extra">Temperatura</span>
+      <span class="chip chip-extra">Viento</span>
+      <span class="chip chip-extra">Cielo</span>
+      <span class="chip chip-extra">Lavado máquina</span>
+      <span class="chip chip-cpa">Aplicador</span>
+      <span class="chip chip-extra">Tractor</span>
+      <span class="chip chip-extra">Maquinaria</span>
+      <span class="chip chip-cpa">Cuartel</span>
+      <span class="chip chip-cpa">Superficie ha</span>
+      <span class="chip chip-cpa">Especie</span>
+      <span class="chip chip-cpa">Objetivo</span>
+      <span class="chip chip-cpa">Producto nombre comercial</span>
+      <span class="chip chip-cpa">Reg SAG</span>
+      <span class="chip chip-cpa">IA</span>
+      <span class="chip chip-extra">Concentración</span>
+      <span class="chip chip-extra">Restricción uso</span>
+      <span class="chip chip-cpa">Carencia etiqueta</span>
+      <span class="chip chip-extra">Carencia ASOEX</span>
+      <span class="chip chip-extra">Aptitud</span>
+      <span class="chip chip-extra">Total Aplicado Lt</span>
+      <span class="chip chip-cpa">Dosis ordenada cc/100L</span>
+      <span class="chip chip-cpa">Mojamiento</span>
+      <span class="chip chip-extra">Mojamiento real</span>
+      <span class="chip chip-extra">Superficie tratada</span>
+      <span class="chip chip-extra">Superficie cubierta %</span>
+      <span class="chip chip-extra">Producto total usado cc/g</span>
+      <span class="chip chip-extra">Producto total usado L/kg</span>
+      <span class="chip chip-extra">U/M</span>
+      <span class="chip chip-cpa">Dosis real L/ha</span>
+      <span class="chip chip-extra">Dosis objetivo L/ha</span>
+      <span class="chip chip-extra">Producto objetivo</span>
+      <span class="chip chip-extra">% desvío</span>
+      <span class="chip chip-extra">Volumen teórico L</span>
+      <span class="chip chip-extra">Diferencia volumen</span>
+      <span class="chip chip-extra">Maquinadas estimadas</span>
+      <span class="chip chip-extra">Maquinadas teóricas</span>
+      <span class="chip chip-extra">Exceso redondeo</span>
+      <span class="chip chip-extra">Reingreso días</span>
+      <span class="chip chip-extra">Fecha reingreso</span>
+      <span class="chip chip-extra">¿Puedo ingresar?</span>
+      <span class="chip chip-extra">Fecha fin carencia</span>
+      <span class="chip chip-extra">¿Puedo cosechar?</span>
+      <span class="chip chip-extra">Observaciones</span>
+      <span class="chip chip-extra">Fecha cosecha</span>
+      <span class="chip chip-extra">Validación carencia</span>
+      <span class="chip chip-extra">Validación reingreso</span>
+      <span class="chip chip-extra">Días cosecha - fin aplicación</span>
+    </div>
+
+    <div class="callout callout-ok">
+      <div class="callout-icon">🟢</div>
+      <div>
+        <h4>El CSP supera ampliamente los requisitos del CPA</h4>
+        <p>El CPA exige 13 campos mínimos. El CSP cubre todos esos 13 campos más 42 campos adicionales que permiten trazabilidad operacional completa, análisis de desvíos, gestión de carencias y datos climáticos. Esto significa que el CSP <em>ya contiene</em> toda la información necesaria para generar el CPA automáticamente.</p>
+      </div>
+    </div>
+
+    <h3 class="sub">1.2 Evaluación por categoría</h3>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-cat">Categoría</th>
+            <th class="col-cpa">CPA (SAG mínimo)</th>
+            <th class="col-csp">CSP (Excel actual)</th>
+            <th class="col-erp">ERP OA (sistema)</th>
+            <th class="col-eval">Evaluación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-cat">Cumplimiento legal</td>
+            <td>13 campos obligatorios. Estándar mínimo SAG Chile para todos los predios.</td>
+            <td>Contiene los 13 campos CPA + 42 adicionales. <strong>Supera el estándar.</strong></td>
+            <td>Puede generar el CPA como reporte de exportación desde los datos del CSP.</td>
+            <td class="col-eval"><span class="badge badge-verde">🟢 Cumple</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Trazabilidad</td>
+            <td>Traza producto → cuartel → fecha. Sin historial por lote ni aplicador detallado.</td>
+            <td>Traza producto, cuartel, aplicador, tractor, maquinaria, condiciones climáticas, hora inicio/fin.</td>
+            <td>Agrega OA como identificador único; vincula planificación con ejecución.</td>
+            <td class="col-eval"><span class="badge badge-verde">🟢 Alta</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">BI / Reportes</td>
+            <td>Sin capacidad de reporte. Solo registro manual.</td>
+            <td>Reportes manuales posibles vía tablas dinámicas. Sin automatización.</td>
+            <td>Motor de reportes: uso por temporada, desvíos, costos, comparativos.</td>
+            <td class="col-eval"><span class="badge badge-amarillo">🟡 Parcial</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Generación OA retroactivas</td>
+            <td>No aplica — el CPA no genera órdenes.</td>
+            <td>Se puede crear una OA después de registrar la aplicación en el CSP.</td>
+            <td><strong>Función clave:</strong> crea OA a partir de registros CSP ya existentes.</td>
+            <td class="col-eval"><span class="badge badge-verde">🟢 Viable</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Generación OA proactivas</td>
+            <td>No aplica.</td>
+            <td>No genera órdenes futuras. Solo registra lo ejecutado.</td>
+            <td><strong>Función primaria:</strong> el agrónomo emite OA antes de la aplicación; el operario ejecuta y completa.</td>
+            <td class="col-eval"><span class="badge badge-verde">🟢 Diseñado para esto</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Notificaciones automáticas</td>
+            <td>No contempla notificaciones.</td>
+            <td>Sin notificaciones. El operador revisa manualmente las columnas de carencia y reingreso.</td>
+            <td>Puede enviar alertas por email/SMS cuando vence carencia o reingreso.</td>
+            <td class="col-eval"><span class="badge badge-rojo">❌ Falta implementar</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Auditoría externa</td>
+            <td>El CPA es el documento físico que audita el SAG/ASOEX.</td>
+            <td>Excel editable: riesgo de modificación sin registro de cambios.</td>
+            <td>Log de auditoría inmutable: usuario, timestamp, campo modificado, valor anterior/nuevo.</td>
+            <td class="col-eval"><span class="badge badge-amarillo">🟡 CSP: riesgo; OA: seguro</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Gestión carencias</td>
+            <td>Campo estático: días de carencia de etiqueta.</td>
+            <td>Calcula fecha fin carencia, muestra "¿Puedo cosechar?" con lógica en celda.</td>
+            <td>Valida carencia en tiempo real al crear OA y bloquea cosecha si está vigente.</td>
+            <td class="col-eval"><span class="badge badge-verde">🟢 Alta</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Gestión reingreso</td>
+            <td>No exigido en el CPA estándar.</td>
+            <td>Calcula fecha reingreso y muestra "¿Puedo ingresar?" en columna dedicada.</td>
+            <td>Puede bloquear acceso al cuartel y notificar al supervisor.</td>
+            <td class="col-eval"><span class="badge badge-verde">🟢 Bien cubierto en CSP</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Análisis desvíos dosis</td>
+            <td>Solo registra dosis real. Sin comparativo automático.</td>
+            <td>Calcula: dosis real, dosis objetivo, % desvío, diferencia de volumen, exceso de redondeo.</td>
+            <td>Dashboard de desvíos por cuartel, producto y aplicador. Histórico temporal.</td>
+            <td class="col-eval"><span class="badge badge-verde">🟢 CSP: muy detallado</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Clima / condiciones</td>
+            <td>No exigido.</td>
+            <td>Temperatura, viento, cielo, lavado de máquina — capturados manualmente.</td>
+            <td>Puede integrar API meteorológica para llenado automático de condiciones.</td>
+            <td class="col-eval"><span class="badge badge-amarillo">🟡 Manual → automatizable</span></td>
+          </tr>
+          <tr>
+            <td class="col-cat">Uso por temporada</td>
+            <td>Se puede calcular manualmente con todos los registros del año.</td>
+            <td>Tabla dinámica manual. No hay totalizador automático por producto/temporada.</td>
+            <td>Módulo de inventario y consumo: litros usados por producto, cuartel y período.</td>
+            <td class="col-eval"><span class="badge badge-rojo">❌ Pendiente en ambos</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 2 — HALLAZGO CRÍTICO
+  ============================================================ -->
+  <div class="seccion" id="sec-hallazgo">
+    <div class="seccion-header">
+      <div class="seccion-numero">2</div>
+      <div>
+        <div class="seccion-titulo">Hallazgo Crítico — El campo n° OA siempre está vacío</div>
+        <div class="seccion-subtitulo">Brecha de integración entre el CSP y el ERP OA</div>
+      </div>
+    </div>
+
+    <div class="callout callout-critico">
+      <div class="callout-icon">🔴</div>
+      <div>
+        <h4>Desconexión total entre el registro operacional y el sistema de órdenes</h4>
+        <p>
+          En la hoja "Aplicaciones" del CSP existe la columna <strong>n° OA</strong> (tercera columna, posición 3 de 55).
+          Esta columna está <strong>vacía en todos los registros</strong>. Esto significa que ninguna aplicación registrada
+          en el CSP puede ser rastreada hasta una Orden de Aplicación en el ERP, y viceversa.
+          El ciclo planificación → ejecución → registro → compliance <strong>está roto</strong>.
+        </p>
+      </div>
+    </div>
+
+    <h3 class="sub">2.1 Impacto del campo vacío</h3>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:25%">Impacto</th>
+            <th style="width:35%">Situación actual (n° OA vacío)</th>
+            <th style="width:40%">Situación objetivo (n° OA poblado)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Trazabilidad</strong></td>
+            <td>❌ No se puede saber si la aplicación fue autorizada o espontánea.</td>
+            <td>✅ Cada registro CSP se vincula a una OA con agrónomo responsable y fecha de emisión.</td>
+          </tr>
+          <tr>
+            <td><strong>Auditoría SAG/ASOEX</strong></td>
+            <td>⚠️ No se puede cruzar la OA con el registro físico de campo.</td>
+            <td>✅ Auditor puede ir de la OA al registro CSP y al CPA en un solo clic.</td>
+          </tr>
+          <tr>
+            <td><strong>Control de desvíos</strong></td>
+            <td>❌ El % desvío en el CSP no puede compararse con lo que el ERP planificó.</td>
+            <td>✅ El ERP detecta desvíos automáticamente al cerrar la OA contra el CSP.</td>
+          </tr>
+          <tr>
+            <td><strong>Facturación / costos</strong></td>
+            <td>❌ No se puede costear la aplicación si no existe OA asociada.</td>
+            <td>✅ El costo se imputa al cuartel y al lote de producción a través de la OA.</td>
+          </tr>
+          <tr>
+            <td><strong>Validación técnica</strong></td>
+            <td>⚠️ El operador puede aplicar sin que el agrónomo haya validado el producto.</td>
+            <td>✅ Sin OA activa y firmada digitalmente, el CSP no acepta el registro.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">2.2 Cómo el ERP OA cierra el ciclo</h3>
+
+    <div class="arq-grid">
+      <div class="arq-nodo">
+        <span class="arq-icon">👨‍🌾</span>
+        <div class="arq-nombre">Agrónomo</div>
+        <div class="arq-desc">Crea OA en el ERP. Define producto, cuartel, dosis objetivo.</div>
+      </div>
+      <div class="arq-nodo">
+        <span class="arq-icon">📋</span>
+        <div class="arq-nombre">ERP genera n° OA</div>
+        <div class="arq-desc">Número único correlativo. Se imprime o envía al operador.</div>
+      </div>
+      <div class="arq-nodo">
+        <span class="arq-icon">🚜</span>
+        <div class="arq-nombre">Operador ejecuta</div>
+        <div class="arq-desc">Ingresa el n° OA en el CSP. Completa condiciones reales de aplicación.</div>
+      </div>
+      <div class="arq-nodo">
+        <span class="arq-icon">✅</span>
+        <div class="arq-nombre">Ciclo cerrado</div>
+        <div class="arq-desc">ERP consolida OA + CSP. CPA se genera automáticamente.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-aviso">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <h4>OA retroactivas para registros históricos</h4>
+        <p>
+          Para los registros CSP existentes (sin n° OA), el ERP debe permitir crear OA retroactivas.
+          El flujo inverso: <strong>CSP → OA</strong> (en lugar de OA → CSP).
+          El sistema importa los campos del CSP, crea la OA con estado "Cerrada/Retroactiva"
+          y puebla el campo n° OA en el Excel histórico. Este proceso de backfill puede automatizarse
+          con un script Python de migración (ver Fase 1 del Plan de Acción).
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 3 — RECOMENDACIÓN
+  ============================================================ -->
+  <div class="seccion" id="sec-recomendacion">
+    <div class="seccion-header">
+      <div class="seccion-numero">3</div>
+      <div>
+        <div class="seccion-titulo">Recomendación — Arquitectura Óptima</div>
+        <div class="seccion-subtitulo">CSP como núcleo, OA como motor de planificación, CPA como subproducto automático</div>
+      </div>
+    </div>
+
+    <p>
+      La arquitectura recomendada no reemplaza el CSP ni el CPA. Los integra en un flujo único donde
+      cada sistema hace lo que mejor sabe hacer, eliminando doble digitación y maximizando la calidad del dato.
+    </p>
+
+    <h3 class="sub">3.1 Principios de diseño</h3>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">💡</div>
+      <div>
+        <h4>Un solo punto de entrada, múltiples salidas</h4>
+        <ul>
+          <li>El operador <strong>solo llena el CSP</strong> (o la interfaz web equivalente). No llena el CPA por separado.</li>
+          <li>El agrónomo <strong>solo usa el ERP</strong> para planificar y emitir OA.</li>
+          <li>El CPA se <strong>genera automáticamente</strong> como reporte PDF desde el CSP al final de cada mes.</li>
+          <li>El ERP actúa como <strong>hub de integración</strong>: recibe datos del CSP y expone reportes al SAG/ASOEX.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="sub">3.2 Flujo de datos recomendado</h3>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Paso</th>
+            <th>Actor</th>
+            <th>Instrumento</th>
+            <th>Acción</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Planificación</strong></td>
+            <td>Agrónomo</td>
+            <td>ERP OA</td>
+            <td>Crea OA: especie, cuartel, producto, dosis objetivo, fecha planificada.</td>
+            <td>Se genera n° OA. Se valida carencia y restricción de uso automáticamente.</td>
+          </tr>
+          <tr>
+            <td><strong>2. Exportación CSV</strong></td>
+            <td>Sistema (automático)</td>
+            <td>ERP → CSV</td>
+            <td>ERP exporta la OA en formato CSV con los campos del CSP precargados.</td>
+            <td>Operador recibe CSV o ficha impresa con n° OA y datos de la orden.</td>
+          </tr>
+          <tr>
+            <td><strong>3. Ejecución</strong></td>
+            <td>Operador</td>
+            <td>CSP (Excel/Web)</td>
+            <td>Importa CSV de OA. Completa campos de ejecución real: clima, mojamiento real, dosis real, hora, maquinaria.</td>
+            <td>Fila CSP completa. n° OA poblado. Cálculos automáticos de desvío y carencia.</td>
+          </tr>
+          <tr>
+            <td><strong>4. Cierre OA</strong></td>
+            <td>Sistema (automático)</td>
+            <td>CSP → ERP</td>
+            <td>CSP exporta fila completada al ERP. ERP cierra la OA y registra desvíos.</td>
+            <td>OA cerrada. Inventario descontado. Alerta si desvío supera umbral.</td>
+          </tr>
+          <tr>
+            <td><strong>5. Generación CPA</strong></td>
+            <td>Sistema (automático)</td>
+            <td>ERP → PDF/Excel</td>
+            <td>Al cierre de mes el ERP filtra los 13 campos CPA y genera el reporte oficial.</td>
+            <td>CPA listo para firma del responsable técnico y archivado SAG.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">3.3 Reglas de negocio críticas a implementar en el ERP</h3>
+
+    <ul>
+      <li>⛔ <strong>Validación de carencia:</strong> si <code>fecha_cosecha &lt; fecha_aplicación + carencia_días</code>, bloquear la OA y notificar al agrónomo.</li>
+      <li>⛔ <strong>Validación de reingreso:</strong> si <code>fecha_reingreso &gt; hoy</code>, emitir alerta de acceso restringido al cuartel.</li>
+      <li>⚠️ <strong>Alerta de desvío:</strong> si <code>abs(% desvío) &gt; 10%</code>, notificar al agrónomo con detalle de producto, cuartel y aplicador.</li>
+      <li>✅ <strong>Validación SAG:</strong> verificar que el Reg SAG del producto esté vigente en la base de datos del SAG antes de emitir la OA.</li>
+      <li>📊 <strong>Límite de uso:</strong> alertar cuando el uso acumulado de un IA supere el límite anual permitido por el SAG para ese cultivo.</li>
+    </ul>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 4 — PLAN DE ACCIÓN
+  ============================================================ -->
+  <div class="seccion" id="sec-plan">
+    <div class="seccion-header">
+      <div class="seccion-numero">4</div>
+      <div>
+        <div class="seccion-titulo">Plan de Acción en 4 Fases</div>
+        <div class="seccion-subtitulo">Desde la corrección inmediata hasta la plataforma agrícola inteligente</div>
+      </div>
+    </div>
+
+    <div class="fases-grid">
+
+      <!-- FASE 1 -->
+      <div class="fase-card fase-1">
+        <div class="fase-header">🔴 Fase 1 — Inmediata (0 – 3 meses)</div>
+        <div class="fase-body">
+          <strong>Objetivo:</strong> Poblar el campo n° OA en el CSP histórico y establecer el flujo mínimo OA → CSP.
+          <ul>
+            <li>Auditar registros CSP: identificar todas las filas sin n° OA.</li>
+            <li>Script Python de migración: leer Excel CSP, cruzar con datos disponibles y generar OA retroactivas en el ERP.</li>
+            <li>Agregar endpoint en el ERP Flask: <code>POST /api/oa/retroactiva</code> que recibe JSON del CSP.</li>
+            <li>Definir y documentar el estándar de numeración OA: <code>OA-YYYY-NNNN</code>.</li>
+            <li>Capacitar al operador en el nuevo campo obligatorio n° OA.</li>
+            <li>Validación en Excel: celda n° OA no puede quedar vacía (validación de datos).</li>
+          </ul>
+          <div class="fase-tags">
+            <span class="tag">Python</span>
+            <span class="tag">openpyxl</span>
+            <span class="tag">Flask REST</span>
+            <span class="tag">Excel</span>
+          </div>
+          <p style="margin-top:10px"><strong>Resultado esperado:</strong> 100% de registros CSP vinculados a una OA. Cero filas con n° OA vacío de ahora en adelante.</p>
+        </div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div class="fase-card fase-2">
+        <div class="fase-header">🟠 Fase 2 — Corto plazo (3 – 6 meses)</div>
+        <div class="fase-body">
+          <strong>Objetivo:</strong> Exportación automática CSV OA → CSP y generación automática del CPA mensual.
+          <ul>
+            <li>Desarrollar módulo de exportación en el ERP: botón "Exportar a CSP (CSV)" por OA o por rango de fechas.</li>
+            <li>Definir el mapping de columnas ERP ↔ CSP: tabla de equivalencias campo a campo.</li>
+            <li>Script de importación en Google Sheets: macro o Apps Script que lee el CSV y lo inserta en la hoja "Aplicaciones".</li>
+            <li>Módulo CPA en el ERP: filtro de los 13 campos y exportación a PDF con firma electrónica del responsable técnico.</li>
+            <li>Programar generación automática del CPA el último día hábil de cada mes.</li>
+            <li>Prueba piloto con un cuartel durante 30 días antes de despliegue general.</li>
+          </ul>
+          <div class="fase-tags">
+            <span class="tag">Flask</span>
+            <span class="tag">Pandas CSV</span>
+            <span class="tag">Apps Script</span>
+            <span class="tag">WeasyPrint PDF</span>
+          </div>
+          <p style="margin-top:10px"><strong>Resultado esperado:</strong> CPA generado sin intervención manual. Tiempo de preparación mensual: de 4 horas a 5 minutos.</p>
+        </div>
+      </div>
+
+      <!-- FASE 3 -->
+      <div class="fase-card fase-3">
+        <div class="fase-header">🟢 Fase 3 — Mediano plazo (6 – 12 meses)</div>
+        <div class="fase-body">
+          <strong>Objetivo:</strong> Automatización de notificaciones, dashboard de desvíos y validación en tiempo real.
+          <ul>
+            <li>Módulo de alertas: notificaciones por email cuando se aproxima fecha de carencia o reingreso.</li>
+            <li>Dashboard web (Flask + Chart.js): desvíos de dosis por cuartel, aplicador y producto. Comparativo temporada actual vs anterior.</li>
+            <li>Integración API clima: precargar temperatura y viento desde OpenWeatherMap al abrir la OA.</li>
+            <li>Validación Reg SAG: consumir la API pública del SAG para verificar vigencia del producto antes de emitir la OA.</li>
+            <li>Módulo de inventario: descontar litros/kilos al cerrar cada OA. Generar alerta de reposición.</li>
+            <li>Roles y permisos: agrónomo (crea OA), operador (ejecuta), administrador (reportes).</li>
+          </ul>
+          <div class="fase-tags">
+            <span class="tag">Flask</span>
+            <span class="tag">Chart.js</span>
+            <span class="tag">OpenWeatherMap API</span>
+            <span class="tag">SQLAlchemy</span>
+            <span class="tag">SendGrid</span>
+          </div>
+          <p style="margin-top:10px"><strong>Resultado esperado:</strong> Cero alertas de carencia incumplida. Desvíos de dosis reducidos en 30%.</p>
+        </div>
+      </div>
+
+      <!-- FASE 4 -->
+      <div class="fase-card fase-4">
+        <div class="fase-header">🌿 Fase 4 — Largo plazo (12+ meses)</div>
+        <div class="fase-body">
+          <strong>Objetivo:</strong> Plataforma agrícola inteligente con análisis predictivo y app móvil offline.
+          <ul>
+            <li>App móvil (PWA offline): operador llena el CSP desde el campo sin conexión. Sincroniza al volver al wifi.</li>
+            <li>Análisis predictivo: modelo ML que sugiere dosis óptima basado en histórico de desvíos, clima y estado del cultivo.</li>
+            <li>Integración ERP contable: imputar costo de insumos por cuartel directamente al sistema contable.</li>
+            <li>Portal ASOEX: exportar datos en formato exigido por ASOEX para auditorías de exportación.</li>
+            <li>Multi-predio: soporte para gestionar múltiples campos bajo una sola instancia del sistema.</li>
+            <li>Trazabilidad blockchain (opcional): registro inmutable de cada aplicación para mercados premium.</li>
+          </ul>
+          <div class="fase-tags">
+            <span class="tag">PWA / Service Worker</span>
+            <span class="tag">scikit-learn</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Docker</span>
+            <span class="tag">REST API</span>
+          </div>
+          <p style="margin-top:10px"><strong>Resultado esperado:</strong> Plataforma SaaS agrícola. Reducción del tiempo de gestión fitosanitaria en 60%. Cumplimiento ASOEX automatizado.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 5 — CONTINGENCIA EXCEL / GOOGLE SHEETS
+  ============================================================ -->
+  <div class="seccion" id="sec-contingencia">
+    <div class="seccion-header">
+      <div class="seccion-numero">5</div>
+      <div>
+        <div class="seccion-titulo">Contingencia en Excel / Google Sheets</div>
+        <div class="seccion-subtitulo">Cómo mantener la operación si el ERP cae o no está disponible</div>
+      </div>
+    </div>
+
+    <div class="callout callout-aviso">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <h4>El CSP Excel ES el sistema de contingencia</h4>
+        <p>
+          Si el ERP OA no está disponible (corte de internet, mantenimiento, fallo del servidor),
+          el operador continúa llenando el CSP normalmente. El campo n° OA queda vacío temporalmente
+          y se backfilla cuando el sistema vuelva. Lo crítico es <strong>no perder ninguna fila de aplicación</strong>
+          y garantizar los cálculos de carencia y reingreso.
+        </p>
+      </div>
+    </div>
+
+    <div class="contingencia-grid">
+
+      <div class="cont-card">
+        <div class="cont-header">📁 Hojas que deben existir en el Excel</div>
+        <div class="cont-body">
+          <ul>
+            <li><strong>Aplicaciones</strong> — hoja principal, 55 columnas, una fila por producto × cuartel.</li>
+            <li><strong>Productos</strong> — catálogo: nombre comercial, IA, Reg SAG, carencia etiqueta, carencia ASOEX, reingreso días.</li>
+            <li><strong>Cuarteles</strong> — código, nombre, superficie ha, especie, variedad.</li>
+            <li><strong>Aplicadores</strong> — RUT, nombre, certificación vigente hasta.</li>
+            <li><strong>Maquinaria</strong> — código, tipo, capacidad (L), calibración vigente.</li>
+            <li><strong>CPA_mensual</strong> — hoja de solo lectura generada por macro con los 13 campos del CPA.</li>
+            <li><strong>Resumen_temporada</strong> — tabla dinámica: litros/kg usados por producto y cuartel.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cont-card">
+        <div class="cont-header">📤 Qué exportar diariamente al final de la jornada</div>
+        <div class="cont-body">
+          <ul>
+            <li>Guardar copia del Excel en: <code>CSP_YYYYMMDD.xlsx</code> en Google Drive (carpeta compartida con el agrónomo).</li>
+            <li>Exportar hoja "Aplicaciones" como CSV: <code>aplicaciones_YYYYMMDD.csv</code> — insumo para el ERP cuando vuelva.</li>
+            <li>Exportar hoja "CPA_mensual" como PDF al cierre de cada mes.</li>
+            <li>Verificar que las columnas <em>¿Puedo ingresar?</em> y <em>¿Puedo cosechar?</em> no tengan ❌ para cuarteles activos.</li>
+            <li>Nunca borrar filas — marcar con estado "Anulada" si corresponde.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 class="sub">5.1 Fórmulas críticas en Excel</h3>
+
+    <p>Estas fórmulas deben estar presentes en las columnas correspondientes de la hoja "Aplicaciones". Se asume que la fila de datos comienza en la fila 2 y que la hoja de productos se llama "Productos".</p>
+
+    <p><strong>Carencia etiqueta (traída desde tabla Productos):</strong></p>
+    <div class="formula-block">=BUSCARV(T2, Productos!$A:$H, 5, 0)
+-- T2 = Nombre comercial del producto
+-- Columna 5 en Productos = Carencia etiqueta (días)</div>
+
+    <p><strong>Fecha fin carencia:</strong></p>
+    <div class="formula-block">=A2 + X2
+-- A2 = Fecha aplicación
+-- X2 = Carencia etiqueta (días)
+-- Formato celda: DD/MM/YYYY</div>
+
+    <p><strong>¿Puedo cosechar? (valida contra fecha cosecha programada):</strong></p>
+    <div class="formula-block">=SI(Y2="", "Sin fecha cosecha",
+   SI(AX2 &lt;= Y2, "✅ SÍ",
+   "❌ NO — faltan " &amp; TEXT(Y2 - AX2, "0") &amp; " días"))
+-- Y2  = Fecha cosecha programada
+-- AX2 = Fecha fin carencia</div>
+
+    <p><strong>Fecha reingreso:</strong></p>
+    <div class="formula-block">=A2 + BUSCARV(T2, Productos!$A:$I, 6, 0)
+-- Columna 6 en Productos = Reingreso días</div>
+
+    <p><strong>¿Puedo ingresar? (valida contra hoy):</strong></p>
+    <div class="formula-block">=SI(AZ2 &lt;= HOY(), "✅ SÍ — Reingreso habilitado",
+   "❌ NO — Hasta " &amp; TEXTO(AZ2, "DD/MM/YYYY"))
+-- AZ2 = Fecha reingreso calculada</div>
+
+    <p><strong>% Desvío dosis:</strong></p>
+    <div class="formula-block">=SI(AH2=0, "Sin dato",
+   TEXTO((AG2 - AH2) / AH2, "0.0%"))
+-- AG2 = Dosis real L/ha
+-- AH2 = Dosis objetivo L/ha</div>
+
+    <p><strong>Diferencia de volumen:</strong></p>
+    <div class="formula-block">=AI2 - AJ2
+-- AI2 = Volumen real aplicado (L)
+-- AJ2 = Volumen teórico calculado (L)</div>
+
+    <p><strong>Superficie cubierta %:</strong></p>
+    <div class="formula-block">=SI(P2=0, 0, AB2 / P2)
+-- AB2 = Superficie tratada (ha)
+-- P2  = Superficie cuartel (ha)
+-- Formato celda: 0.0%</div>
+
+    <h3 class="sub">5.2 Validaciones de datos recomendadas en Excel</h3>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Columna</th>
+            <th>Tipo de validación</th>
+            <th>Configuración</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fecha aplicación</td>
+            <td>Fecha</td>
+            <td>Entre 01/01/2020 y 31/12/2030. Error si está vacía.</td>
+          </tr>
+          <tr>
+            <td>Aplicación por programa</td>
+            <td>Lista</td>
+            <td>Lista desplegable: SI, NO</td>
+          </tr>
+          <tr>
+            <td>Cuartel</td>
+            <td>Lista desde hoja</td>
+            <td>=Cuarteles!$A$2:$A$100 (validación indirecta)</td>
+          </tr>
+          <tr>
+            <td>Producto nombre comercial</td>
+            <td>Lista desde hoja</td>
+            <td>=Productos!$A$2:$A$200</td>
+          </tr>
+          <tr>
+            <td>Dosis ordenada cc/100L</td>
+            <td>Número</td>
+            <td>Mayor que 0. Alerta si supera 2× la dosis máxima de etiqueta.</td>
+          </tr>
+          <tr>
+            <td>Superficie ha</td>
+            <td>Número decimal</td>
+            <td>Mayor que 0 y menor o igual a la superficie máxima del cuartel.</td>
+          </tr>
+          <tr>
+            <td>Temperatura</td>
+            <td>Número decimal</td>
+            <td>Entre -10 y 50 °C.</td>
+          </tr>
+          <tr>
+            <td>Aplicador</td>
+            <td>Lista desde hoja</td>
+            <td>=Aplicadores!$B$2:$B$50 (filtra solo certificados vigentes)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SECCIÓN 6 — GUÍA DE ESTUDIO
+  ============================================================ -->
+  <div class="seccion" id="sec-guia">
+    <div class="seccion-header">
+      <div class="seccion-numero">6</div>
+      <div>
+        <div class="seccion-titulo">Guía de Estudio para el Operador</div>
+        <div class="seccion-subtitulo">Conocimientos técnicos ordenados por prioridad de impacto en el proyecto</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">🎯</div>
+      <div>
+        <h4>Criterio de priorización</h4>
+        <p>
+          Los temas están ordenados por su <strong>impacto directo en las fases del plan de acción</strong>.
+          No es necesario dominarlos todos antes de empezar — se pueden aprender en paralelo a medida
+          que avanza el proyecto. El tiempo indicado es el mínimo para ser operativamente funcional,
+          no para llegar a nivel experto.
+        </p>
+      </div>
+    </div>
+
+    <div class="estudio-lista">
+
+      <!-- 1. Python básico -->
+      <div class="estudio-item">
+        <div class="est-prioridad">1</div>
+        <div class="est-icon">🐍</div>
+        <div class="est-contenido">
+          <h4>Python básico</h4>
+          <p class="por-que">
+            <strong>Por qué:</strong> Es el lenguaje del ERP (Flask), de los scripts de migración (openpyxl),
+            de los reportes (Pandas) y de la automatización de exportación CSV. Todo el proyecto depende de Python.
+            Sin él no se puede escribir ni entender ninguna parte del código del ERP.
+          </p>
+          <p class="recurso">
+            📚 <strong>Recurso gratuito:</strong>
+            <a href="https://docs.python.org/es/3/tutorial/" target="_blank">Tutorial oficial Python en español (docs.python.org)</a>
+            + <em>Automate the Boring Stuff with Python</em> (automatetheboringstuff.com — gratuito online).
+            Enfocarse en: variables, listas, diccionarios, bucles, funciones, archivos CSV y JSON.
+          </p>
+        </div>
+        <div class="est-tiempo">
+          <span class="horas">40h</span>
+          <span class="horas-label">~5 semanas<br>8h/semana</span>
+        </div>
+      </div>
+
+      <!-- 2. Google Sheets avanzado -->
+      <div class="estudio-item">
+        <div class="est-prioridad">2</div>
+        <div class="est-icon">📊</div>
+        <div class="est-contenido">
+          <h4>Google Sheets avanzado</h4>
+          <p class="por-que">
+            <strong>Por qué:</strong> El CSP vive en Excel/Google Sheets. El operador necesita dominar
+            BUSCARV/XLOOKUP, validación de datos, formato condicional, tablas dinámicas y Apps Script básico
+            para construir y mantener el sistema de contingencia y la importación del CSV de OA.
+            Es el conocimiento de mayor retorno inmediato (Fase 1 y 2).
+          </p>
+          <p class="recurso">
+            📚 <strong>Recurso gratuito:</strong>
+            <a href="https://support.google.com/docs/answer/3540681" target="_blank">Ayuda oficial Google Sheets</a>
+            + canal YouTube "Railsware Product Academy" (tutoriales de Sheets en inglés con subtítulos)
+            + <em>Google Apps Script</em> en developers.google.com/apps-script.
+          </p>
+        </div>
+        <div class="est-tiempo">
+          <span class="horas">20h</span>
+          <span class="horas-label">~2.5 semanas<br>8h/semana</span>
+        </div>
+      </div>
+
+      <!-- 3. SQL básico -->
+      <div class="estudio-item">
+        <div class="est-prioridad">3</div>
+        <div class="est-icon">🗄️</div>
+        <div class="est-contenido">
+          <h4>SQL básico</h4>
+          <p class="por-que">
+            <strong>Por qué:</strong> El ERP usa SQLAlchemy sobre SQLite/PostgreSQL. Para depurar,
+            hacer consultas de auditoría, entender los modelos de datos y construir los reportes del CPA,
+            es imprescindible saber SELECT, JOIN, WHERE, GROUP BY, INSERT y UPDATE.
+            También es la base para entender cómo se generan los reportes de desvíos y uso por temporada.
+          </p>
+          <p class="recurso">
+            📚 <strong>Recurso gratuito:</strong>
+            <a href="https://www.sqlbolt.com/" target="_blank">SQLBolt.com</a> (interactivo, 20 lecciones)
+            + <a href="https://mode.com/sql-tutorial/" target="_blank">Mode SQL Tutorial</a>.
+            Completar los ejercicios de SELECT, JOIN y GROUP BY antes de pasar al siguiente tema.
+          </p>
+        </div>
+        <div class="est-tiempo">
+          <span class="horas">24h</span>
+          <span class="horas-label">~3 semanas<br>8h/semana</span>
+        </div>
+      </div>
+
+      <!-- 4. Pandas -->
+      <div class="estudio-item">
+        <div class="est-prioridad">4</div>
+        <div class="est-icon">🐼</div>
+        <div class="est-contenido">
+          <h4>Pandas (Python)</h4>
+          <p class="por-que">
+            <strong>Por qué:</strong> El script de migración CSP → OA lee el Excel con <code>pandas.read_excel()</code>.
+            El módulo de exportación al CPA filtra columnas con <code>df[columnas_cpa]</code>.
+            El análisis de desvíos y el resumen de temporada son operaciones nativas de Pandas (groupby, merge, pivot_table).
+            Sin Pandas, cada operación requiere escribir el doble de código Python puro.
+          </p>
+          <p class="recurso">
+            📚 <strong>Recurso gratuito:</strong>
+            <a href="https://pandas.pydata.org/docs/getting_started/intro_tutorials/" target="_blank">Tutoriales oficiales Pandas</a>
+            + <a href="https://www.kaggle.com/learn/pandas" target="_blank">Kaggle Learn — Pandas (gratuito)</a>.
+            Priorizar: read_excel, read_csv, filtrado, merge y to_csv.
+          </p>
+        </div>
+        <div class="est-tiempo">
+          <span class="horas">20h</span>
+          <span class="horas-label">~2.5 semanas<br>8h/semana</span>
+        </div>
+      </div>
+
+      <!-- 5. Flask -->
+      <div class="estudio-item">
+        <div class="est-prioridad">5</div>
+        <div class="est-icon">🌐</div>
+        <div class="est-contenido">
+          <h4>Flask (Python web)</h4>
+          <p class="por-que">
+            <strong>Por qué:</strong> El ERP OA está construido en Flask. Para agregar los endpoints
+            de la API REST (<code>POST /api/oa/retroactiva</code>, <code>GET /api/cpa/export</code>),
+            para crear el dashboard de desvíos y para entender el ciclo request-response, es necesario
+            conocer Flask: rutas, plantillas Jinja2, formularios, SQLAlchemy y blueprints.
+          </p>
+          <p class="recurso">
+            📚 <strong>Recurso gratuito:</strong>
+            <a href="https://flask.palletsprojects.com/en/stable/tutorial/" target="_blank">Tutorial oficial Flask (Flaskr)</a>
+            + <em>The Flask Mega-Tutorial</em> de Miguel Grinberg (miguelgrinberg.com — parte 1 a 8 gratuitas).
+          </p>
+        </div>
+        <div class="est-tiempo">
+          <span class="horas">30h</span>
+          <span class="horas-label">~4 semanas<br>8h/semana</span>
+        </div>
+      </div>
+
+      <!-- 6. Git -->
+      <div class="estudio-item">
+        <div class="est-prioridad">6</div>
+        <div class="est-icon">🔀</div>
+        <div class="est-contenido">
+          <h4>Git (control de versiones)</h4>
+          <p class="por-que">
+            <strong>Por qué:</strong> Sin Git, cada cambio al código del ERP es irreversible.
+            Con Git se puede trabajar en la Fase 2 sin romper la Fase 1, hacer rollback si algo falla en producción,
+            colaborar con otros desarrolladores y mantener un historial de cambios legible (quién cambió qué y por qué).
+            Es el seguro de vida del desarrollo de software.
+          </p>
+          <p class="recurso">
+            📚 <strong>Recurso gratuito:</strong>
+            <a href="https://learngitbranching.js.org/?locale=es_ES" target="_blank">Learn Git Branching (interactivo, en español)</a>
+            + <a href="https://git-scm.com/book/es/v2" target="_blank">Pro Git Book en español (git-scm.com)</a>.
+            Dominar: init, add, commit, push, pull, branch, merge y rebase básico.
+          </p>
+        </div>
+        <div class="est-tiempo">
+          <span class="horas">12h</span>
+          <span class="horas-label">~1.5 semanas<br>8h/semana</span>
+        </div>
+      </div>
+
+      <!-- 7. HTML/CSS -->
+      <div class="estudio-item">
+        <div class="est-prioridad">7</div>
+        <div class="est-icon">🎨</div>
+        <div class="est-contenido">
+          <h4>HTML / CSS básico</h4>
+          <p class="por-que">
+            <strong>Por qué:</strong> Las plantillas del ERP (como <code>oa_plantilla_v3.html</code>) son HTML/CSS.
+            Para modificar formularios, mejorar la interfaz del dashboard, crear el reporte PDF del CPA
+            y agregar nuevos campos a la vista de la OA, se necesita entender la estructura HTML y el box model de CSS.
+            No es necesario ser diseñador — solo lo suficiente para editar plantillas Jinja2 con confianza.
+          </p>
+          <p class="recurso">
+            📚 <strong>Recurso gratuito:</strong>
+            <a href="https://developer.mozilla.org/es/docs/Learn" target="_blank">MDN Web Docs — Aprender desarrollo web (en español)</a>
+            + <a href="https://www.freecodecamp.org/learn/2022/responsive-web-design/" target="_blank">freeCodeCamp — Responsive Web Design</a>.
+            Priorizar: HTML semántico, tablas, formularios, flexbox, y media queries para impresión.
+          </p>
+        </div>
+        <div class="est-tiempo">
+          <span class="horas">16h</span>
+          <span class="horas-label">~2 semanas<br>8h/semana</span>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="separador">
+
+    <h3 class="sub">6.1 Resumen del plan de estudio</h3>
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Prioridad</th>
+            <th>Tema</th>
+            <th>Tiempo estimado</th>
+            <th>Impacto en el proyecto</th>
+            <th>Fase relacionada</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong></td>
+            <td>🐍 Python básico</td>
+            <td>~40 horas</td>
+            <td>Scripts de migración, ERP completo</td>
+            <td><span class="badge badge-rojo">Fase 1</span></td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td>📊 Google Sheets avanzado</td>
+            <td>~20 horas</td>
+            <td>Contingencia, fórmulas CSP, importación CSV</td>
+            <td><span class="badge badge-rojo">Fase 1</span></td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td>🗄️ SQL básico</td>
+            <td>~24 horas</td>
+            <td>Consultas ERP, auditoría, reportes CPA</td>
+            <td><span class="badge badge-amarillo">Fase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>4</strong></td>
+            <td>🐼 Pandas</td>
+            <td>~20 horas</td>
+            <td>Migración CSP, exportación CPA, análisis desvíos</td>
+            <td><span class="badge badge-amarillo">Fase 2</span></td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td>🌐 Flask</td>
+            <td>~30 horas</td>
+            <td>API REST, dashboard, módulo CPA, alertas</td>
+            <td><span class="badge badge-verde">Fase 3</span></td>
+          </tr>
+          <tr>
+            <td><strong>6</strong></td>
+            <td>🔀 Git</td>
+            <td>~12 horas</td>
+            <td>Control de versiones, colaboración, rollback</td>
+            <td><span class="badge badge-rojo">Fase 1</span> (iniciar ya)</td>
+          </tr>
+          <tr>
+            <td><strong>7</strong></td>
+            <td>🎨 HTML / CSS</td>
+            <td>~16 horas</td>
+            <td>Plantillas ERP, reportes PDF, dashboard UI</td>
+            <td><span class="badge badge-amarillo">Fase 2</span></td>
+          </tr>
+          <tr style="background: var(--verde-fondo); font-weight: 600;">
+            <td colspan="2">TOTAL</td>
+            <td>~162 horas</td>
+            <td>Cobertura técnica completa del proyecto</td>
+            <td>0 – 12 meses</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-ok">
+      <div class="callout-icon">🟢</div>
+      <div>
+        <h4>Recomendación de ritmo de estudio</h4>
+        <p>
+          Con <strong>8 horas semanales</strong> (1 hora por día de lunes a sábado + 2 horas el domingo),
+          se completan las 162 horas en aproximadamente <strong>5 meses</strong>, lo que se solapa perfectamente
+          con las Fases 1 y 2 del plan de acción. No es necesario terminar un tema para empezar a aplicarlo:
+          aprende Python básico la semana 1 y esa misma semana empieza a escribir el script de auditoría de filas CSP sin n° OA.
+          <strong>Aprender haciendo acelera el 300% del proceso.</strong>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <div class="footer">
+    <strong>San Pedro SpA</strong> · Análisis CPA vs CSP vs ERP OA ·
+    Versión 1.0 · Mayo 2026 ·
+    Documento generado automáticamente — uso interno
+  </div>
+
+</div>
+</body>
+</html>
