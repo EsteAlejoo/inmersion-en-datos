@@ -108,7 +108,7 @@ body{font-family:Arial,sans-serif;font-size:9pt;background:#c8c8c8;color:#111}
 
 /* ── Tablas ── */
 table{width:100%;border-collapse:collapse;margin-bottom:4px}
-th{font-size:6.5pt;font-weight:bold;padding:3px;text-align:center;border:1px solid #555;line-height:1.2;background:var(--cn-d);color:white}
+th{font-size:6.5pt;font-weight:bold;padding:3px;text-align:center;border:1px solid #aaa;line-height:1.2;background:#f0f0f0;color:#111}
 td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;vertical-align:middle}
 .t-prod td{background:var(--cp-ll)}
 .t-prod td.pn{text-align:left;font-weight:bold;background:var(--cp-l)}
@@ -147,7 +147,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
 /* ── Página 2 ── */
 .p2-tit{text-align:center;font-size:11pt;font-weight:bold;text-transform:uppercase;border-bottom:2.5px solid var(--cn-d);padding-bottom:4px;margin-bottom:5px}
 .p2-sub{text-align:center;font-size:7pt;color:var(--cn-m);margin-bottom:8px}
-.t-desg th{background:var(--cn-d);color:white;font-size:6.3pt;padding:3px}
+.t-desg th{background:#f0f0f0;color:#111;font-size:6.3pt;padding:3px;border:1px solid #aaa}
 .t-desg td{background:var(--cp-ll);font-size:7.3pt}
 .t-desg td.dn{background:var(--cp-l);font-weight:bold;text-align:left;padding-left:5px}
 .t-desg tr.tot td{background:var(--cn-l);font-weight:bold;border-top:2px solid var(--cn-d)}
@@ -220,8 +220,9 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
   <div class="cfg-g" style="flex:2;min-width:220px">
     <h4>Datos empresa</h4>
     <div class="cfg-r"><label>Razón Social:</label><input type="text" value="San Pedro SpA" oninput="sync('razon',this.value)"></div>
+    <div class="cfg-r"><label>RUT empresa:</label><input type="text" value="76.123.456-7" oninput="sync('rut',this.value)"></div>
     <div class="cfg-r"><label>Predio/Productor:</label><input type="text" value="Campo San Pablo" oninput="sync('predio',this.value)"></div>
-    <div class="cfg-r"><label>CSG:</label><input type="text" value="76.123.456-7" oninput="sync('csg',this.value)"></div>
+    <div class="cfg-r"><label>CSG:</label><input type="text" value="CSG-001" oninput="sync('csg',this.value)"></div>
     <div class="cfg-r"><label>Dirección:</label><input type="text" value="Camino El Romero s/n" oninput="sync('dir',this.value)"></div>
     <div class="cfg-r"><label>Localidad:</label><input type="text" value="La Serena, Elqui, Coquimbo" oninput="sync('localidad',this.value)"></div>
     <div style="font-size:6.5pt;color:#aaa;margin:8px 0 4px">Logo empresa (PNG/SVG):</div>
@@ -292,13 +293,14 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
       <span class="b-fecha">Fecha Inicio Aplicación: &nbsp;<strong>10-05-2026</strong></span>
     </div>
     <div class="b-body">
-      <div class="g2" style="margin-bottom:5px">
+      <div class="g4" style="margin-bottom:5px">
         <div class="campo"><span class="cl">Razón Social</span><span class="cv" data-f="razon">San Pedro SpA</span></div>
-        <div class="campo"><span class="cl">Dirección</span><span class="cv" data-f="dir">Camino El Romero s/n</span></div>
-      </div>
-      <div class="g3">
+        <div class="campo"><span class="cl">RUT</span><span class="cv" data-f="rut">76.123.456-7</span></div>
         <div class="campo"><span class="cl">Predio / Productor</span><span class="cv" data-f="predio">Campo San Pablo</span></div>
-        <div class="campo"><span class="cl">CSG</span><span class="cv" data-f="csg">76.123.456-7</span></div>
+        <div class="campo"><span class="cl">CSG</span><span class="cv" data-f="csg">CSG-001</span></div>
+      </div>
+      <div class="g2">
+        <div class="campo"><span class="cl">Dirección</span><span class="cv" data-f="dir">Camino El Romero s/n</span></div>
         <div class="campo"><span class="cl">Localidad</span><span class="cv" data-f="localidad">La Serena, Elqui, Coquimbo</span></div>
       </div>
     </div>
@@ -374,7 +376,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
         <th style="width:9%">Objetivo</th>
         <th style="width:8%">Dosis/100L<br><span style="font-weight:normal">(cc ó g)</span></th>
         <th style="width:7%">Dosis/Ha<br><span style="font-weight:normal">(L ó kg)</span></th>
-        <th style="width:9%">Nec. Maq.<br><span style="font-weight:normal">(cc ó g)</span></th>
+        <th style="width:9%">Nec.<br>Maquinada<br><span style="font-weight:normal">(L ó kg)</span></th>
         <th style="width:8%">Nec. Total<br><span style="font-weight:normal">(L ó kg)</span></th>
         <th style="width:15%">Carencia<br><span style="font-weight:normal">(días / mercado)</span></th>
         <th style="width:8%">Usos/<br>Temp.</th>
@@ -384,21 +386,21 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
       <tr>
         <td class="pn">Defender Potasio</td>
         <td>Fosfito de potasio</td><td>Nutrición / Resist.</td>
-        <td>300</td><td>13,5</td><td>6.000</td><td>312 L</td>
+        <td>300</td><td>13,5 L</td><td>6,0 L</td><td>312 L</td>
         <td style="font-size:6.8pt">Sin carencia</td>
         <td>—</td>
       </tr>
       <tr>
         <td class="pn">Ripper Max 75 SG</td>
         <td>Abamectina 75 g/kg</td><td>Ácaros / Mosquita</td>
-        <td>1.000</td><td>45</td><td>20.000</td><td>1.040 kg</td>
+        <td>1.000</td><td>45 kg</td><td>20,0 kg</td><td>1.040 kg</td>
         <td style="font-size:6.8pt">(Etiq.) 14 · (ASOEX) 30</td>
         <td style="font-size:8pt">1 de 3</td>
       </tr>
       <tr>
         <td class="pn">Exirel 200 SC</td>
         <td>Cyantraniliprole 200 g/L</td><td>Trips / Lepid.</td>
-        <td>50</td><td>2,25</td><td>1.000</td><td>52 L</td>
+        <td>50</td><td>2,25 L</td><td>1,0 L</td><td>52 L</td>
         <td style="font-size:6.8pt">(Etiq.) 7 · (ASOEX) 14</td>
         <td style="font-size:8pt">1 de 2</td>
       </tr>
@@ -406,7 +408,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
   </table>
 
   <!-- NOTAS -->
-  <div class="nota-cosecha">* Fecha posible Cosecha = Fecha última aplicación + carencia mayor + 1 día.&nbsp; Carencia mayor: 30 días (Ripper Max ASOEX) → Cosecha no antes del <strong>10-06-2026</strong>.</div>
+  <div class="nota-cosecha">* Fecha posible Cosecha = Fecha aplicación + días de carencia + 1 día (el día de aplicación = día 1; con 30 días de carencia, el día 32 es posible cosechar). Carencia mayor: Ripper Max ASOEX 30 días → aplicado el 10-05 → cosecha no antes del <strong>10-06-2026</strong>.</div>
   <div class="nota-ph">Nota pH: Regular pH del agua de aplicación. Rango ideal 5,5–6,5. Si pH &gt; 7,0, corregir antes de agregar productos.</div>
 
   <!-- INSTRUCCIONES -->
@@ -485,7 +487,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
 
   <p class="nota">* Maquinada completa = 2.000 L solución. Litros adicionales = maquinada parcial. FERT=Fertilizante, ACAR=Acaricida, INSC=Insecticida SC. Ord.= Orden de incorporación.</p>
   <p class="nota">* Cantidades referenciales según calibración vigente. Verificar nivel de estanque al iniciar cada carga.</p>
-  <p class="nota">* Fecha posible Cosecha = Fecha última aplicación + carencia mayor + 1 día → no antes del <strong>10-06-2026</strong>.</p>
+  <p class="nota">* Fecha posible Cosecha = día aplicación + días carencia + 1 (día de aplicación = día 1). Ripper Max ASOEX 30 días → 10-05 + 30 + 1 = <strong>10-06-2026</strong>.</p>
 
   <!-- EPP (página 2) -->
   <div class="sec-lbl" style="background:var(--cg3-d);margin-top:10px">Equipo de Protección Personal requerido — hacer clic para marcar</div>
