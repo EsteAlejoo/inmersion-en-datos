@@ -194,6 +194,16 @@
   .banda-nocivo  { color: var(--rojo); font-weight: bold; }
   .incompat { font-size: 7.5pt; color: var(--rojo); font-style: italic; }
 
+  /* ── Clasificación toxicológica OMS ────────────────────── */
+  .tox-pill{display:inline-block;padding:1px 8px;border-radius:12px;font-size:7.5pt;font-weight:bold;border-bottom:3px solid transparent;font-family:monospace}
+  .tox-ia  {border-bottom-color:#7b0000;color:#7b0000;background:#fff0f0}
+  .tox-ib  {border-bottom-color:#e53e3e;color:#c53030;background:#fff5f5}
+  .tox-ii  {border-bottom-color:#d69e2e;color:#975a16;background:#fffbeb}
+  .tox-iii {border-bottom-color:#3182ce;color:#2b6cb0;background:#ebf8ff}
+  .tox-u   {border-bottom-color:#38a169;color:#276749;background:#f0fff4}
+  .tox-na  {border-bottom-color:#888;color:#555;background:#f5f5f5}
+  .tox-ref{font-size:7.5pt;color:#555;margin-top:6px;line-height:1.6}
+
   /* ── Tabla mojamientos ──────────────────────────────────── */
   .tabla-moj { width: 100%; border-collapse: collapse; font-size: 9pt; }
   .tabla-moj thead th { background: var(--verde2); color: white; padding: 6px 10px; text-align: left; }
@@ -680,6 +690,7 @@
           <th>Car. Naranja</th>
           <th>Car. ASOEX</th>
           <th>Banda SAG</th>
+          <th>Categ. OMS</th>
           <th>Ord.</th>
         </tr>
       </thead>
@@ -694,6 +705,7 @@
           <td>0</td>
           <td>—</td>
           <td class="banda-verde">VERDE</td>
+          <td><span class="tox-pill tox-na">NA</span></td>
           <td>1</td>
         </tr>
         <tr>
@@ -706,6 +718,7 @@
           <td>0</td>
           <td>—</td>
           <td class="banda-verde">VERDE</td>
+          <td><span class="tox-pill tox-na">NA</span></td>
           <td>2</td>
         </tr>
         <tr>
@@ -718,6 +731,7 @@
           <td>0</td>
           <td>—</td>
           <td class="banda-verde">VERDE</td>
+          <td><span class="tox-pill tox-u">U</span></td>
           <td>3</td>
         </tr>
         <tr>
@@ -730,6 +744,7 @@
           <td>0</td>
           <td>—</td>
           <td class="banda-verde">VERDE</td>
+          <td><span class="tox-pill tox-u">U</span></td>
           <td>4</td>
         </tr>
         <tr>
@@ -742,6 +757,7 @@
           <td>14</td>
           <td>21</td>
           <td class="banda-cuidado">CUIDADO</td>
+          <td><span class="tox-pill tox-ii">II</span></td>
           <td>5</td>
         </tr>
         <tr>
@@ -754,6 +770,7 @@
           <td>14</td>
           <td>30</td>
           <td class="banda-nocivo">NOCIVO</td>
+          <td><span class="tox-pill tox-ib">Ib</span></td>
           <td>6</td>
         </tr>
         <tr>
@@ -766,6 +783,7 @@
           <td>3</td>
           <td>—</td>
           <td class="banda-verde">VERDE</td>
+          <td><span class="tox-pill tox-u">U</span></td>
           <td>7</td>
         </tr>
         <tr>
@@ -778,6 +796,7 @@
           <td>7</td>
           <td>14</td>
           <td class="banda-cuidado">CUIDADO</td>
+          <td><span class="tox-pill tox-u">U</span></td>
           <td>8</td>
         </tr>
         <tr>
@@ -790,6 +809,7 @@
           <td>3</td>
           <td>—</td>
           <td class="banda-verde">VERDE</td>
+          <td><span class="tox-pill tox-u">U</span></td>
           <td>9</td>
         </tr>
         <tr>
@@ -802,13 +822,15 @@
           <td>3</td>
           <td style="color:var(--rojo);font-weight:bold">70 ⚠</td>
           <td class="banda-cuidado">CUIDADO</td>
+          <td><span class="tox-pill tox-iii">III</span></td>
           <td>10</td>
         </tr>
       </tbody>
     </table>
     <p style="font-size:8pt; color:#555; margin-top:8px;">
       * Incompatibilidades: Winspray ↔ Azufre (separar 30 días) &nbsp;|&nbsp; Exirel ↔ Winspray/EC/OD (no mezclar)<br>
-      * Orden de mezcla: número menor = incorporar primero al estanque con agua.
+      * Orden de mezcla: número menor = incorporar primero al estanque con agua.<br>
+      * Categ. OMS = campo <code style="background:#eee;padding:1px 4px;border-radius:2px;font-size:7.5pt">categoria_tox_oms</code> requerido en el catálogo de plaguicidas. Ver sección 10 para valores válidos.
     </p>
   </div>
 </div>
@@ -930,6 +952,82 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 10. CLASIFICACIÓN TOXICOLÓGICA OMS -->
+<div class="seccion">
+  <div class="seccion-titulo">10. Clasificación toxicológica OMS — Requisito catálogo de plaguicidas <span>Campo: categoria_tox_oms</span></div>
+  <div class="seccion-cuerpo">
+
+    <div class="regla">
+      <h4>Requisito de base de datos</h4>
+      <p>El catálogo de plaguicidas (<code>productos</code>) debe incluir el campo <code>categoria_tox_oms</code> de tipo
+      <code>Enum('Ia','Ib','II','III','U','NA')</code>, obligatorio para todos los productos registrados como plaguicidas
+      (no requerido para fertilizantes, aunque se recomienda usar <code>'NA'</code>).</p>
+    </div>
+
+    <table class="tabla-spec" style="margin-bottom:14px">
+      <thead>
+        <tr>
+          <th style="width:10%">Valor</th>
+          <th style="width:28%">Categoría OMS</th>
+          <th style="width:12%">Color OA</th>
+          <th style="width:50%">Descripción / ejemplos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="campo-nombre">Ia</td>
+          <td>Extremadamente peligroso</td>
+          <td><span class="tox-pill tox-ia">Ia</span></td>
+          <td>DL₅₀ oral (rata) &lt; 5 mg/kg. Ej.: Bromadiolona, Paratión-metil. Uso muy restringido en Chile.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">Ib</td>
+          <td>Muy peligroso</td>
+          <td><span class="tox-pill tox-ib">Ib</span></td>
+          <td>DL₅₀ oral (rata) 5–50 mg/kg. Ej.: Abamectina, Dimetoato, Clorpirifos. Banda NOCIVO SAG.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">II</td>
+          <td>Moderadamente peligroso</td>
+          <td><span class="tox-pill tox-ii">II</span></td>
+          <td>DL₅₀ oral (rata) 50–2000 mg/kg. Ej.: Lambda-cihalotrina, Imidacloprid, Malatión. Banda CUIDADO SAG.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">III</td>
+          <td>Poco peligroso</td>
+          <td><span class="tox-pill tox-iii">III</span></td>
+          <td>DL₅₀ oral (rata) 2000–5000 mg/kg. Ej.: Etoxazole, Glifosato. Banda CUIDADO o VERDE SAG.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">U</td>
+          <td>Sin riesgo agudo</td>
+          <td><span class="tox-pill tox-u">U</span></td>
+          <td>DL₅₀ oral (rata) ≥ 5000 mg/kg. Ej.: Cyantraniliprole, Azufre, Aceite mineral, Piretrinas. Banda VERDE SAG.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">NA</td>
+          <td>No aplica</td>
+          <td><span class="tox-pill tox-na">NA</span></td>
+          <td>Fertilizantes y enmiendas sin clasificación de plaguicida. Ej.: Fosfito de potasio, Nitrato de potasio.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="regla warn">
+      <h4>Regla de visualización en OA</h4>
+      <p>En el documento OA (hoja 2, tabla de desglose por cuartel), el encabezado de cada columna de producto lleva
+      un borde inferior de <strong>4 px</strong> con el color de su categoría OMS. El color se aplica mediante la clase CSS
+      <code>tox-[categoria]</code> (ej.: <code>tox-ib</code> para Abamectina → borde rojo oscuro). Este requisito es
+      obligatorio para cumplimiento de trazabilidad y protección de trabajadores agrícolas.</p>
+    </div>
+
+    <p class="tox-ref">
+      Referencia: OMS — <em>The WHO Recommended Classification of Pesticides by Hazard and Guidelines to Classification</em>, edición 2019.<br>
+      Para consulta normativa en Chile: SAG — Resolución N° 8505/2020 (Registro de plaguicidas y clasificación de peligrosidad).
+    </p>
   </div>
 </div>
 

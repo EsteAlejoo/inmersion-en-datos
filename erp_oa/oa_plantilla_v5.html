@@ -103,7 +103,7 @@ body{font-family:Arial,sans-serif;font-size:9pt;background:#c8c8c8;color:#111}
 .cal-nota{font-size:5.8pt;color:var(--cn-m);margin:4px 0 3px;font-style:italic;border-top:1px dashed var(--cn-l);padding-top:4px}
 
 /* ── Notas bajo tabla ── */
-.nota-cosecha{background:#ebf4ff;border:1px solid #bee3f8;border-left:3px solid #63b3ed;border-radius:2px;font-size:6.3pt;color:#2c5282;padding:3px 8px;margin-bottom:4px}
+.nota-cosecha{background:#fff5f5;border:1px solid #fbd5d5;border-left:3px solid #f87171;border-radius:2px;font-size:6.3pt;color:#991b1b;padding:3px 8px;margin-bottom:4px}
 .nota-ph{background:var(--ab);border:1px solid var(--ab-b);border-left:3px solid var(--ab-b);border-radius:2px;font-size:6.2pt;color:var(--ab-t);padding:3px 8px;margin-bottom:6px}
 
 /* ── Tablas ── */
@@ -152,6 +152,22 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
 .t-desg td.dn{background:var(--cp-l);font-weight:bold;text-align:left;padding-left:5px}
 .t-desg tr.tot td{background:var(--cn-l);font-weight:bold;border-top:2px solid var(--cn-d)}
 .nota{font-size:6.2pt;color:var(--cn-m);margin-top:5px;font-style:italic}
+
+/* ── Toxicología OMS ── */
+.tox-ia{border-bottom:4px solid #7b0000!important}
+.tox-ib{border-bottom:4px solid #e53e3e!important}
+.tox-ii{border-bottom:4px solid #d69e2e!important}
+.tox-iii{border-bottom:4px solid #3182ce!important}
+.tox-u{border-bottom:4px solid #38a169!important}
+.tox-na{border-bottom:4px solid #888!important}
+.tox-legend{font-size:5.8pt;color:var(--cn-m);margin-top:5px;display:flex;flex-wrap:wrap;gap:3px 8px;align-items:center}
+.tl-tag{padding:1px 7px 2px;border-bottom:3px solid transparent;font-weight:bold;font-size:5.8pt;background:white;border:1px solid #ddd;border-radius:2px}
+.tl-tag.tox-ia{border-bottom:3px solid #7b0000;color:#7b0000}
+.tl-tag.tox-ib{border-bottom:3px solid #e53e3e;color:#c53030}
+.tl-tag.tox-ii{border-bottom:3px solid #d69e2e;color:#975a16}
+.tl-tag.tox-iii{border-bottom:3px solid #3182ce;color:#2b6cb0}
+.tl-tag.tox-u{border-bottom:3px solid #38a169;color:#276749}
+.tl-tag.tox-na{border-bottom:3px solid #888;color:#555}
 </style>
 </head>
 <body>
@@ -254,7 +270,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
     <div class="cfg-r" style="flex-direction:column;align-items:flex-start;gap:4px">
       <textarea id="txt-pre1">• Use siempre EPP completo indicado. Guárdelo lavado en lugar asignado.
 • No aplicar con temperatura > 25 °C ni viento > 3 km/h.
-• Verifique que SAG y apicultores estén notificados.
+• Verifique que SAG, apicultores, y poblaciones cercanas estén notificados.
 • Prohibido aplicar en zonas de conservación, cursos de agua o pasos de fauna.
 • No debe haber terceros durante la aplicación.</textarea>
       <button class="cfg-btn" onclick="applyText()">Aplicar al documento</button>
@@ -378,8 +394,9 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
         <th style="width:7%">Dosis/Ha<br><span style="font-weight:normal">(L ó kg)</span></th>
         <th style="width:9%">Nec.<br>Maquinada<br><span style="font-weight:normal">(L ó kg)</span></th>
         <th style="width:8%">Nec. Total<br><span style="font-weight:normal">(L ó kg)</span></th>
-        <th style="width:15%">Carencia<br><span style="font-weight:normal">(días / mercado)</span></th>
-        <th style="width:8%">Usos/<br>Temp.</th>
+        <th style="width:7%">Carencia<br>Etiq.<br><span style="font-weight:normal">(días)</span></th>
+        <th style="width:7%">Carencia<br>ASOEX<br><span style="font-weight:normal">(días)</span></th>
+        <th style="width:6%">Usos/<br>Temp.</th>
       </tr>
     </thead>
     <tbody>
@@ -387,28 +404,25 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
         <td class="pn">Defender Potasio</td>
         <td>Fosfito de potasio</td><td>Nutrición / Resist.</td>
         <td>300</td><td>13,5 L</td><td>6,0 L</td><td>312 L</td>
-        <td style="font-size:6.8pt">Sin carencia</td>
-        <td>—</td>
+        <td>—</td><td>—</td><td>—</td>
       </tr>
       <tr>
         <td class="pn">Ripper Max 75 SG</td>
         <td>Abamectina 75 g/kg</td><td>Ácaros / Mosquita</td>
         <td>1.000</td><td>45 kg</td><td>20,0 kg</td><td>1.040 kg</td>
-        <td style="font-size:6.8pt">(Etiq.) 14 · (ASOEX) 30</td>
-        <td style="font-size:8pt">1 de 3</td>
+        <td>14</td><td>30</td><td style="font-size:8pt">1 de 3</td>
       </tr>
       <tr>
         <td class="pn">Exirel 200 SC</td>
         <td>Cyantraniliprole 200 g/L</td><td>Trips / Lepid.</td>
         <td>50</td><td>2,25 L</td><td>1,0 L</td><td>52 L</td>
-        <td style="font-size:6.8pt">(Etiq.) 7 · (ASOEX) 14</td>
-        <td style="font-size:8pt">1 de 2</td>
+        <td>7</td><td>14</td><td style="font-size:8pt">1 de 2</td>
       </tr>
     </tbody>
   </table>
 
   <!-- NOTAS -->
-  <div class="nota-cosecha">* Fecha posible Cosecha = Fecha aplicación + días de carencia + 1 día (el día de aplicación = día 1; con 30 días de carencia, el día 32 es posible cosechar). Carencia mayor: Ripper Max ASOEX 30 días → aplicado el 10-05 → cosecha no antes del <strong>10-06-2026</strong>.</div>
+  <div class="nota-cosecha">⚠ Fecha posible Cosecha = Fecha aplicación (día 0) + días carencia + 1 día. Ejemplo: aplicado 10-05 (día 0) + 30 días ASOEX + 1 = cosecha no antes del <strong>11-06-2026</strong>. — Carencia mayor este OA: Ripper Max ASOEX 30 días.</div>
   <div class="nota-ph">Nota pH: Regular pH del agua de aplicación. Rango ideal 5,5–6,5. Si pH &gt; 7,0, corregir antes de agregar productos.</div>
 
   <!-- INSTRUCCIONES -->
@@ -420,7 +434,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
     <div class="instruc-b" id="instruc-b" contenteditable="true">
       • Use siempre EPP completo indicado. Guárdelo lavado en el lugar asignado.<br>
       • No aplicar con temperatura &gt; 25 °C ni viento &gt; 3 km/h.<br>
-      • Verifique que SAG y apicultores estén notificados.<br>
+      • Verifique que SAG, apicultores, y poblaciones cercanas estén notificados.<br>
       • Prohibido aplicar en zonas de conservación, cursos de agua o pasos de fauna.<br>
       • No debe haber terceros durante la aplicación.
     </div>
@@ -470,9 +484,9 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
         <th style="width:9%">Vol.<br>solución<br>(L)</th>
         <th style="width:8%">Maq.<br>completas<br>×2.000 L</th>
         <th style="width:8%">Litros<br>adicionales</th>
-        <th style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">FERT · Ord.1</span><br>Defender Potasio<br>(L)</th>
-        <th style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">ACAR · Ord.2</span><br>Ripper Max 75 SG<br>(kg)</th>
-        <th style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">INSC · Ord.3</span><br>Exirel 200 SC<br>(L)</th>
+        <th class="tox-na" style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">FERT · Ord.1</span><br>Defender Potasio<br>(L)</th>
+        <th class="tox-ib" style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">ACAR · Ord.2</span><br>Ripper Max 75 SG<br>(kg)</th>
+        <th class="tox-u" style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">INSC · Ord.3</span><br>Exirel 200 SC<br>(L)</th>
       </tr>
     </thead>
     <tbody>
@@ -487,7 +501,17 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
 
   <p class="nota">* Maquinada completa = 2.000 L solución. Litros adicionales = maquinada parcial. FERT=Fertilizante, ACAR=Acaricida, INSC=Insecticida SC. Ord.= Orden de incorporación.</p>
   <p class="nota">* Cantidades referenciales según calibración vigente. Verificar nivel de estanque al iniciar cada carga.</p>
-  <p class="nota">* Fecha posible Cosecha = día aplicación + días carencia + 1 (día de aplicación = día 1). Ripper Max ASOEX 30 días → 10-05 + 30 + 1 = <strong>10-06-2026</strong>.</p>
+  <p class="nota">* Fecha posible Cosecha = día aplicación (día 0) + días carencia + 1. Ripper Max ASOEX 30 días → 10-05 (día 0) + 30 + 1 = <strong>11-06-2026</strong>.</p>
+
+  <div class="tox-legend">
+    <strong style="font-size:5.8pt;color:var(--cn-d)">Clasificación toxicológica OMS:</strong>
+    <span class="tl-tag tox-ia">Ia — Extremadamente peligroso</span>
+    <span class="tl-tag tox-ib">Ib — Muy peligroso</span>
+    <span class="tl-tag tox-ii">II — Moderadamente peligroso</span>
+    <span class="tl-tag tox-iii">III — Poco peligroso</span>
+    <span class="tl-tag tox-u">U — Sin riesgo agudo</span>
+    <span class="tl-tag tox-na">Fertilizante / No clasificado</span>
+  </div>
 
   <!-- EPP (página 2) -->
   <div class="sec-lbl" style="background:var(--cg3-d);margin-top:10px">Equipo de Protección Personal requerido — hacer clic para marcar</div>
@@ -772,17 +796,17 @@ function exportCSV(){
      concentracion:'25% P/P', formulacion:'SL', aptitud:'Fertilizante',
      objetivo:'Nutricion / Resistencia', tipo:'FERT', orden:1,
      dosis_cc100L:300, um:'LT', carencia_etiq:0, carencia_asoex:'-',
-     restriccion_max:0, uso_actual:0},
+     restriccion_max:0, uso_actual:0, tox:'tox-na'},
     {nombre:'Ripper Max 75 SG', reg_sag:'1234', ia:'Abamectina 75 g/kg',
      concentracion:'75 g/kg', formulacion:'SG', aptitud:'Acaricida - Insecticida',
      objetivo:'Acaros / Mosquita blanca', tipo:'ACAR', orden:2,
      dosis_cc100L:1000, um:'KG', carencia_etiq:14, carencia_asoex:30,
-     restriccion_max:3, uso_actual:1},
+     restriccion_max:3, uso_actual:1, tox:'tox-ib'},
     {nombre:'Exirel 200 SC', reg_sag:'5678', ia:'Cyantraniliprole 200 g/L',
      concentracion:'200 g/L', formulacion:'SC', aptitud:'Insecticida',
      objetivo:'Trips / Lepidopteros', tipo:'INSC', orden:3,
      dosis_cc100L:50, um:'LT', carencia_etiq:7, carencia_asoex:14,
-     restriccion_max:2, uso_actual:1}
+     restriccion_max:2, uso_actual:1, tox:'tox-u'}
   ];
   const HDR=[
     'folio_oa','por_programa','fecha_emision','fecha_inicio_aplicacion','fecha_termino_aplicacion',
@@ -809,7 +833,7 @@ function exportCSV(){
       const dha=p.um==='KG'?(p.dosis_cc100L*OA.mojamiento/100/1000).toFixed(3):(p.dosis_cc100L*OA.mojamiento/100).toFixed(2);
       const dc=typeof p.carencia_etiq==='number'?p.carencia_etiq:0;
       let ffc='-';
-      if(dc>0){const d=new Date(fb);d.setDate(d.getDate()+dc);ffc=d.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'});}
+      if(dc>0){const d=new Date(fb);d.setDate(d.getDate()+dc+2);ffc=d.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'});}
       rows.push([
         OA.folio,OA.por_programa,OA.fecha_emision,OA.fecha_inicio,OA.fecha_termino,
         c.n,c.ha,OA.especie,OA.variedad,
