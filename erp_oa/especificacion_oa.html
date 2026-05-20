@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Especificación — Orden de Aplicación de Agroquímicos · San Pedro SpA</title>
+<style>
+  :root {
+    --verde:   #1a4d2e;
+    --verde2:  #2d6a4f;
+    --verde3:  #52b788;
+    --amarillo:#ffd700;
+    --gris1:   #f4f4f4;
+    --gris2:   #e0e0e0;
+    --rojo:    #c0392b;
+    --azul:    #1565c0;
+    --texto:   #1a1a1a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 10pt; color: var(--texto); background: #f0f0f0; }
+
+  /* ── Página portada ─────────────────────────────────────── */
+  .portada {
+    background: var(--verde);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    page-break-after: always;
+  }
+  .portada h1 { font-size: 28pt; text-align: center; margin-bottom: 12px; }
+  .portada h2 { font-size: 16pt; font-weight: normal; opacity: .85; margin-bottom: 40px; text-align: center; }
+  .portada .meta { background: rgba(255,255,255,.12); border-radius: 8px; padding: 24px 40px; font-size: 11pt; line-height: 2; }
+  .portada .meta strong { color: var(--verde3); }
+
+  /* ── Sección ─────────────────────────────────────────────── */
+  .seccion {
+    background: white;
+    max-width: 900px;
+    margin: 32px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    page-break-inside: avoid;
+  }
+  .seccion-titulo {
+    background: var(--verde2);
+    color: white;
+    padding: 12px 20px;
+    font-size: 12pt;
+    font-weight: bold;
+    letter-spacing: .5px;
+  }
+  .seccion-titulo span { opacity: .6; font-size: 9pt; font-weight: normal; margin-left: 12px; }
+  .seccion-cuerpo { padding: 20px; }
+
+  /* ── OA de ejemplo (la "pantalla del documento") ────────── */
+  .oa-doc {
+    background: white;
+    max-width: 840px;
+    margin: 32px auto;
+    border: 2px solid #333;
+    border-radius: 4px;
+    padding: 20px 24px;
+    font-size: 9pt;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  }
+  .oa-doc .oa-titulo {
+    text-align: center;
+    font-size: 13pt;
+    font-weight: bold;
+    border: 2px solid #000;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .oa-doc .cabecera {
+    display: grid;
+    grid-template-columns: 58% 42%;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .campo { display: flex; gap: 6px; margin-bottom: 4px; align-items: baseline; }
+  .campo label { font-weight: bold; white-space: nowrap; min-width: 150px; font-size: 8.5pt; }
+  .campo .val { border-bottom: 1px solid #888; flex: 1; padding-bottom: 1px; color: #003080; }
+  .alerta-ph {
+    background: #ffff00;
+    font-weight: bold;
+    font-size: 8pt;
+    padding: 3px 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+  }
+
+  /* Tabla productos */
+  .oa-doc table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 8pt; }
+  .oa-doc thead th {
+    background: #333;
+    color: white;
+    padding: 4px 5px;
+    text-align: center;
+    border: 1px solid #000;
+    font-size: 7.5pt;
+  }
+  .oa-doc tbody td {
+    padding: 3px 5px;
+    border: 1px solid #bbb;
+    text-align: center;
+    background: #fffde7;
+  }
+  .oa-doc tbody td.nombre { text-align: left; font-weight: bold; background: #fff9c4; }
+  .oa-doc tbody td.dosis { color: #003080; font-weight: bold; }
+
+  .cuarteles-box {
+    border: 1px solid #000;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    font-size: 8pt;
+  }
+  .cuarteles-box strong { display: block; margin-bottom: 3px; }
+  .cuarteles-chips span {
+    display: inline-block;
+    background: var(--gris1);
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin: 2px;
+    font-size: 7.5pt;
+  }
+
+  .considerar { font-size: 8pt; margin-bottom: 8px; }
+  .considerar .fila { display: flex; gap: 8px; margin-bottom: 3px; align-items: baseline; }
+  .considerar label { font-weight: bold; min-width: 160px; flex-shrink: 0; }
+  .considerar .val { border-bottom: 1px solid #888; flex: 1; color: #003080; }
+
+  .nota-legal { font-size: 7.5pt; color: #444; margin-bottom: 8px; line-height: 1.6; }
+
+  .firmas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 20px; text-align: center; font-size: 8pt; }
+  .firma-linea { border-top: 1px solid #000; padding-top: 4px; margin-top: 28px; }
+
+  /* ── Tabla de especificaciones ───────────────────────────── */
+  .tabla-spec { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  .tabla-spec thead th {
+    background: var(--verde2);
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 8.5pt;
+  }
+  .tabla-spec tbody tr:nth-child(even) { background: var(--gris1); }
+  .tabla-spec tbody td { padding: 7px 10px; border-bottom: 1px solid var(--gris2); vertical-align: top; }
+  .tabla-spec .campo-nombre { font-weight: bold; color: var(--verde2); }
+  .tabla-spec .tipo { font-family: monospace; font-size: 8pt; background: #f0f0f0; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
+  .tabla-spec .requerido { color: var(--rojo); font-weight: bold; font-size: 9pt; }
+  .tabla-spec .opcional { color: #888; font-size: 9pt; }
+  .tabla-spec .formula { font-family: monospace; font-size: 8pt; color: var(--azul); background: #e8f0fe; padding: 2px 6px; border-radius: 3px; }
+
+  /* ── Reglas de negocio ───────────────────────────────────── */
+  .regla {
+    border-left: 4px solid var(--verde3);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    background: var(--gris1);
+    border-radius: 0 6px 6px 0;
+  }
+  .regla.error { border-color: var(--rojo); background: #fef0ef; }
+  .regla.warn  { border-color: #f39c12; background: #fffbe6; }
+  .regla h4 { font-size: 9.5pt; margin-bottom: 4px; }
+  .regla p  { font-size: 9pt; color: #444; line-height: 1.5; }
+  .regla code { font-family: monospace; background: rgba(0,0,0,.07); padding: 1px 4px; border-radius: 2px; font-size: 8.5pt; }
+
+  /* ── Tabla cuarteles ────────────────────────────────────── */
+  .tabla-cuar { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+  .tabla-cuar thead th { background: #404040; color: white; padding: 5px 8px; text-align: left; }
+  .tabla-cuar tbody tr:hover { background: #fffde7; }
+  .tabla-cuar tbody td { padding: 4px 8px; border-bottom: 1px solid #eee; }
+  .chip-limon   { background: #e8f5e9; color: #2e7d32; border-radius: 3px; padding: 1px 6px; font-size: 8pt; font-weight: bold; }
+  .chip-naranja { background: #fff3e0; color: #e65100; border-radius: 3px; padding: 1px 6px; font-size: 8pt; font-weight: bold; }
+  .chip-ensayo  { background: #e3f2fd; color: #1565c0; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; }
+
+  /* ── Tabla productos catálogo ───────────────────────────── */
+  .tabla-prod { width: 100%; border-collapse: collapse; font-size: 8pt; }
+  .tabla-prod thead th { background: #333; color: white; padding: 5px 7px; text-align: center; }
+  .tabla-prod thead th:first-child { text-align: left; }
+  .tabla-prod tbody tr:nth-child(even) { background: var(--gris1); }
+  .tabla-prod tbody td { padding: 4px 7px; border-bottom: 1px solid #ddd; text-align: center; vertical-align: top; }
+  .tabla-prod tbody td:first-child { text-align: left; font-weight: bold; }
+  .banda-verde   { color: #1b5e20; font-weight: bold; }
+  .banda-cuidado { color: #e65100; font-weight: bold; }
+  .banda-nocivo  { color: var(--rojo); font-weight: bold; }
+  .incompat { font-size: 7.5pt; color: var(--rojo); font-style: italic; }
+
+  /* ── Tabla mojamientos ──────────────────────────────────── */
+  .tabla-moj { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  .tabla-moj thead th { background: var(--verde2); color: white; padding: 6px 10px; text-align: left; }
+  .tabla-moj tbody td { padding: 6px 10px; border-bottom: 1px solid #ddd; }
+  .tabla-moj tbody tr:nth-child(even) { background: var(--gris1); }
+  .tabla-moj .lha { font-weight: bold; color: var(--azul); font-size: 10pt; }
+
+  /* ── Footer ─────────────────────────────────────────────── */
+  .footer { text-align: center; color: #888; font-size: 8pt; padding: 24px; margin-top: 32px; }
+
+  /* ── Print ───────────────────────────────────────────────── */
+  @media print {
+    body { background: white; }
+    .portada { min-height: auto; padding: 60px 40px; }
+    .seccion, .oa-doc { box-shadow: none; margin: 16px 0; }
+    .no-print { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ PORTADA -->
+<div class="portada">
+  <h1>Orden de Aplicación<br>de Agroquímicos</h1>
+  <h2>Especificación técnica y catálogo de datos</h2>
+  <div class="meta">
+    <div><strong>Productor:</strong> San Pedro SpA</div>
+    <div><strong>Predios:</strong> San Pablo · Ketcal · Pan de Azúcar</div>
+    <div><strong>Localidad:</strong> El Romero, La Serena — IV Región</div>
+    <div><strong>Código documento:</strong> R03/P02</div>
+    <div><strong>Versión sistema:</strong> ERP OA v1.0</div>
+    <div><strong>Fecha:</strong> Mayo 2026</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 1. EJEMPLO REAL -->
+<div style="background:#333; color:white; text-align:center; padding:12px; font-size:11pt; font-weight:bold; max-width:900px; margin:32px auto 0; border-radius:8px 8px 0 0;">
+  1. MODELO DE DOCUMENTO — Orden de Aplicación (ejemplo SP-042)
+</div>
+
+<div class="oa-doc">
+  <div class="oa-titulo">ORDEN DE APLICACIÓN DE AGROCOMPLEMENTOS</div>
+
+  <div class="cabecera">
+    <div>
+      <div class="campo"><label>Especie:</label><span class="val">Limón</span></div>
+      <div class="campo"><label>Estado Fenológico:</label><span class="val">Frutos 40-60 mm</span></div>
+      <div class="campo"><label>Fecha Emisión:</label><span class="val">08-05-2026</span></div>
+      <div class="campo"><label>Fecha desde:</label><span class="val">09-05-2026</span></div>
+      <div class="campo"><label>Fecha inicio aplicación:</label><span class="val">10-05-2026</span></div>
+    </div>
+    <div>
+      <div class="campo"><label>Código:</label><span class="val">R03/P02</span></div>
+      <div class="campo"><label>Productor:</label><span class="val">San Pedro SpA</span></div>
+      <div class="campo"><label>Predio:</label><span class="val">Campo San Pablo</span></div>
+      <div class="campo"><label>Localidad:</label><span class="val">El Romero, La Serena</span></div>
+      <div class="campo"><label>N° Orden:</label><span class="val"><strong>SP-042</strong></span></div>
+      <div class="campo"><label>Tipo:</label><span class="val">Proactiva</span></div>
+    </div>
+  </div>
+
+  <div class="alerta-ph">* Importante regular pH al agua de aplicación &gt;7.0 — pH ideal 5.5–6.5</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:18%;text-align:left">Nombre comercial</th>
+        <th style="width:16%">Ingrediente activo</th>
+        <th style="width:12%">Objetivo</th>
+        <th style="width:10%">Dosis/100 L</th>
+        <th style="width:10%">Dosis/Ha</th>
+        <th style="width:11%">Nec. maquinada</th>
+        <th style="width:11%">Nec. Total</th>
+        <th style="width:6%">Carencia Etiq.</th>
+        <th style="width:6%">Carencia ASOEX</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="nombre">Defender Potasio</td>
+        <td>Fosfito de potasio</td>
+        <td>Nutrición / Resistencia</td>
+        <td class="dosis">300 cc/100L</td>
+        <td>13.5 L</td>
+        <td>6 L</td>
+        <td>67.5 L</td>
+        <td>0</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="nombre">Jabon Potasico Popeye</td>
+        <td>Ácidos grasos de potasio</td>
+        <td>Control mosquita blanca</td>
+        <td class="dosis">500 cc/100L</td>
+        <td>22.5 L</td>
+        <td>10 L</td>
+        <td>112.5 L</td>
+        <td>0</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="nombre">Ripper Max 75 SG</td>
+        <td>Abamectina 75 g/kg</td>
+        <td>Control ácaros y mosquita</td>
+        <td class="dosis">1000 g/100L</td>
+        <td>45 kg</td>
+        <td>20 kg</td>
+        <td>225 kg</td>
+        <td>14</td>
+        <td>30</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="cuarteles-box">
+    <strong>Sectores / Cuarteles (5 cuarteles · 14.80 ha):</strong>
+    <div class="cuarteles-chips">
+      <span>15 (3.79 ha)</span><span>16 (4.31 ha)</span><span>18 (4.73 ha)</span><span>19 (5.14 ha)</span><span>20 (5.14 ha)</span>
+    </div>
+  </div>
+
+  <div class="considerar">
+    <strong>Considerar:</strong>
+    <div class="fila"><label>Mojamiento / ha:</label><span class="val">4 500 L/ha &nbsp;*Según TRV</span></div>
+    <div class="fila"><label>Capacidad estanque:</label><span class="val">2 000 L</span></div>
+    <div class="fila"><label>Forma de aplicación:</label><span class="val">PULVERIZADORA</span></div>
+    <div class="fila"><label>Tiempo de reingreso:</label><span class="val">24 HORAS (política interna) &nbsp;&nbsp;<strong>48 hrs. Mujeres embarazadas/lactancia</strong></span></div>
+    <div class="fila"><label>Mercado destino:</label><span class="val">EXPORTACIÓN — China / UE</span></div>
+  </div>
+
+  <p class="nota-legal">
+    * SE PROHÍBE la aplicación de productos químicos en áreas de conservación, cursos de agua, pasos de fauna u otras áreas de interés ecológico.<br>
+    * Verificar velocidad y presión de trabajo en la tabla de calibraciones — USE SIEMPRE SU EQUIPO DE PROTECCIÓN Y LEA LA ETIQUETA.
+  </p>
+
+  <div class="firmas">
+    <div><div class="firma-linea">Responsable técnico<br><strong>Ing. Agr. [Nombre]</strong></div></div>
+    <div><div class="firma-linea">Emisor</div></div>
+    <div><div class="firma-linea">Recibe</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 2. CAMPOS CABECERA -->
+<div class="seccion">
+  <div class="seccion-titulo">2. Especificación de campos — Cabecera OA <span>Sección identificación y fechas</span></div>
+  <div class="seccion-cuerpo">
+    <table class="tabla-spec">
+      <thead>
+        <tr>
+          <th style="width:18%">Campo</th>
+          <th style="width:12%">Tipo</th>
+          <th style="width:8%">Req.</th>
+          <th style="width:62%">Descripción / Regla</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="campo-nombre">num_oa</td>
+          <td><span class="tipo">String(20)</span></td>
+          <td class="requerido">✓</td>
+          <td>Código único. Prefijo 2 letras del predio + correlativo 3 dígitos. Ej: <strong>SP-042</strong>, <strong>KT-001</strong>, <strong>PA-015</strong>. Autoincremental por predio.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">tipo_oa</td>
+          <td><span class="tipo">Enum</span></td>
+          <td class="requerido">✓</td>
+          <td>Valores: <strong>Proactiva</strong> (planificada con anticipación) | <strong>Retroactiva</strong> (registro posterior a la aplicación). Afecta validación de fechas.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">agricola_id</td>
+          <td><span class="tipo">FK Integer</span></td>
+          <td class="requerido">✓</td>
+          <td>FK → tabla <code>agricolas</code>. Predios: San Pablo (ID 1), Ketcal (ID 2), Pan de Azúcar (ID 3).</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">especie</td>
+          <td><span class="tipo">String(30)</span></td>
+          <td class="opcional">opt</td>
+          <td>Especie predominante de la aplicación. Valores: <strong>Limón</strong> | <strong>Naranja</strong> | <strong>Mandarina</strong>. Determina qué columna de carencia se muestra en el PDF.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">estado_fenologico</td>
+          <td><span class="tipo">String(50)</span></td>
+          <td class="opcional">opt</td>
+          <td>Estado del cultivo al momento de la aplicación. Ej: "Frutos 40-60 mm", "Floración", "Cosecha".</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">fecha_emision</td>
+          <td><span class="tipo">Date</span></td>
+          <td class="requerido">✓</td>
+          <td>Fecha en que se emite y firma la orden. Retroactivas: <span class="formula">fecha_inicio − 2 días hábiles</span>.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">fecha_desde</td>
+          <td><span class="tipo">Date</span></td>
+          <td class="requerido">✓</td>
+          <td>Primer día de vigencia para aplicar. Calculado: <span class="formula">fecha_emision + 1 día hábil</span>.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">fecha_inicio_aplicacion</td>
+          <td><span class="tipo">Date</span></td>
+          <td class="requerido">✓</td>
+          <td>Día real de inicio de la aplicación. Si es menos de 2 días desde emisión → <strong>alerta roja</strong> en PDF.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">mojamiento_Lha</td>
+          <td><span class="tipo">Integer</span></td>
+          <td class="requerido">✓</td>
+          <td>Litros de caldo por hectárea. Sugerido según tipo de aplicación (ver tabla §6). Afecta cálculo de dosis/ha y necesidad total.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">capacidad_estanque</td>
+          <td><span class="tipo">Integer</span></td>
+          <td class="requerido">✓</td>
+          <td>Litros del estanque del equipo pulverizador. Default: <strong>2 000 L</strong>. Afecta dosis maquinada y n° de maquinadas por cuartel.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">mercado_destino</td>
+          <td><span class="tipo">String(100)</span></td>
+          <td class="opcional">opt</td>
+          <td>Destino comercial de la fruta. Valores frecuentes: <strong>China</strong>, <strong>UE</strong>, <strong>USA</strong>, <strong>Argentina</strong>, <strong>Nacional</strong>. Determina qué carencia aplica.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">tipo_maquina</td>
+          <td><span class="tipo">String(50)</span></td>
+          <td class="opcional">opt</td>
+          <td>Equipo de aplicación. Default texto: <strong>"PULVERIZADORA"</strong>.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">agronomo</td>
+          <td><span class="tipo">String(100)</span></td>
+          <td class="opcional">opt</td>
+          <td>Nombre del ingeniero agrónomo responsable técnico que firma la orden.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">reingreso_hrs</td>
+          <td><span class="tipo">Integer</span></td>
+          <td class="opcional">opt</td>
+          <td>Tiempo de reingreso en horas. Default <strong>24 h</strong> (política interna). Embarazadas/lactancia siempre 48 h.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">indicaciones</td>
+          <td><span class="tipo">Text</span></td>
+          <td class="opcional">opt</td>
+          <td>Observaciones o instrucciones adicionales para el aplicador. Se imprime en sección "Considerar".</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">estado</td>
+          <td><span class="tipo">Enum</span></td>
+          <td class="requerido">✓</td>
+          <td>Estados: <strong>borrador</strong> (editable, no imprimible) → <strong>confirmada</strong> (bloqueada, imprimible) → <strong>anulada</strong> (inactiva). Transición solo hacia adelante.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">ha_totales</td>
+          <td><span class="tipo">Decimal(8,2)</span></td>
+          <td class="opcional">calc</td>
+          <td><span class="formula">Σ ha_efectivas de todos los cuarteles</span>. Se calcula y persiste al confirmar.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">litros_totales</td>
+          <td><span class="tipo">Decimal(10,2)</span></td>
+          <td class="opcional">calc</td>
+          <td><span class="formula">ha_totales × mojamiento_Lha</span>. Litros de caldo total a preparar.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">maquinadas_totales</td>
+          <td><span class="tipo">Decimal(8,2)</span></td>
+          <td class="opcional">calc</td>
+          <td><span class="formula">litros_totales / capacidad_estanque</span>. Número total de estanques a preparar.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 3. CAMPOS PRODUCTOS -->
+<div class="seccion">
+  <div class="seccion-titulo">3. Especificación de campos — Tabla de Productos (OA_Productos) <span>Una fila por producto en la mezcla</span></div>
+  <div class="seccion-cuerpo">
+    <table class="tabla-spec">
+      <thead>
+        <tr>
+          <th style="width:18%">Campo</th>
+          <th style="width:12%">Tipo</th>
+          <th style="width:8%">Req.</th>
+          <th style="width:62%">Descripción / Fórmula</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="campo-nombre">oa_id</td>
+          <td><span class="tipo">FK Integer</span></td>
+          <td class="requerido">✓</td>
+          <td>FK → ordenes_aplicacion. Cascade delete.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">producto_id</td>
+          <td><span class="tipo">FK Integer</span></td>
+          <td class="requerido">✓</td>
+          <td>FK → productos. Único por OA (no se repite el mismo producto).</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">dosis_100L</td>
+          <td><span class="tipo">Decimal(10,2)</span></td>
+          <td class="requerido">✓</td>
+          <td>Dosis a aplicar por cada 100 litros de agua. Puede diferir de la dosis estándar del catálogo.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">unidad</td>
+          <td><span class="tipo">Enum cc|g</span></td>
+          <td class="requerido">✓</td>
+          <td><strong>cc</strong> para líquidos (SL, SC, EC, OD) | <strong>g</strong> para sólidos (SG, WG, SP).</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">dosis_ha</td>
+          <td><span class="tipo">Decimal(10,2)</span></td>
+          <td class="opcional">calc</td>
+          <td><span class="formula">dosis_100L × mojamiento_Lha / 100</span>. Cantidad necesaria por hectárea.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">dosis_maquinada</td>
+          <td><span class="tipo">Decimal(10,2)</span></td>
+          <td class="opcional">calc</td>
+          <td><span class="formula">dosis_100L × capacidad_estanque / 100</span>. Cantidad a cargar en cada estanque.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">objetivo</td>
+          <td><span class="tipo">String(150)</span></td>
+          <td class="opcional">opt</td>
+          <td>Plaga u objetivo de control para esta aplicación. Si vacío, se hereda del catálogo de producto.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">orden</td>
+          <td><span class="tipo">Integer</span></td>
+          <td class="opcional">opt</td>
+          <td>Orden de mezcla. Respeta el orden del catálogo (1=primero en incorporar). Crítico para compatibilidad física.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 4. CAMPOS CUARTELES -->
+<div class="seccion">
+  <div class="seccion-titulo">4. Especificación de campos — Cuarteles de la OA (OA_Cuarteles) <span>Una fila por cuartel incluido</span></div>
+  <div class="seccion-cuerpo">
+    <table class="tabla-spec">
+      <thead>
+        <tr>
+          <th style="width:18%">Campo</th>
+          <th style="width:12%">Tipo</th>
+          <th style="width:8%">Req.</th>
+          <th style="width:62%">Descripción / Fórmula</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="campo-nombre">oa_id</td>
+          <td><span class="tipo">FK Integer</span></td>
+          <td class="requerido">✓</td>
+          <td>FK → ordenes_aplicacion. Cascade delete.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">cuartel_id</td>
+          <td><span class="tipo">FK Integer</span></td>
+          <td class="requerido">✓</td>
+          <td>FK → cuarteles. Único por OA (no se repite el mismo cuartel).</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">ha_efectivas</td>
+          <td><span class="tipo">Decimal(6,2)</span></td>
+          <td class="requerido">✓</td>
+          <td>Hectáreas reales a tratar. Por defecto = ha_total del cuartel. Puede reducirse si se trata parcialmente.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">fecha_aplicacion</td>
+          <td><span class="tipo">Date</span></td>
+          <td class="opcional">opt</td>
+          <td>Fecha específica de aplicación en este cuartel. Permite aplicaciones escalonadas dentro de una misma OA.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">litros</td>
+          <td><span class="tipo">Decimal(10,2)</span></td>
+          <td class="opcional">calc</td>
+          <td><span class="formula">ha_efectivas × mojamiento_Lha</span>. Litros de caldo para este cuartel.</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">maquinadas</td>
+          <td><span class="tipo">Decimal(8,2)</span></td>
+          <td class="opcional">calc</td>
+          <td><span class="formula">litros / capacidad_estanque</span>. Número de estanques para este cuartel.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 5. REGLAS DE NEGOCIO -->
+<div class="seccion">
+  <div class="seccion-titulo">5. Reglas de negocio y validaciones</div>
+  <div class="seccion-cuerpo">
+
+    <div class="regla error">
+      <h4>R001 — Incompatibilidad Winspray + Azufre</h4>
+      <p>No se puede emitir una OA que contenga simultáneamente <code>Winspray</code> (aceite mineral) y <code>Azufre Thiolux Jet</code>. Separar un mínimo de <strong>30 días calendario</strong> entre ambas aplicaciones. Error bloqueante.</p>
+    </div>
+
+    <div class="regla error">
+      <h4>R002 — Incompatibilidad Exirel + formulaciones EC/OD</h4>
+      <p><code>Exirel 200 SC</code> no debe mezclarse con <code>Winspray</code> ni ninguna formulación EC u OD (aceites, emulsiones). Error bloqueante al intentar agregar ambos a la misma OA.</p>
+    </div>
+
+    <div class="regla warn">
+      <h4>R003 — Borneo solo en Naranja (uso restringido en Limón)</h4>
+      <p><code>Borneo 500 SC</code> tiene carencia de <strong>70 días</strong> en Limón y ASOEX. Advertencia cuando especie = Limón. No bloqueante pero requiere confirmación explícita.</p>
+    </div>
+
+    <div class="regla warn">
+      <h4>R004 — Alerta plazo emisión</h4>
+      <p>Si <code>fecha_inicio_aplicacion − fecha_emision &lt; 2 días</code>, se imprime alerta roja <em>"MENOS DE 2 DÍAS"</em> en el PDF. No bloquea la emisión pero queda registrado.</p>
+    </div>
+
+    <div class="regla">
+      <h4>R005 — Carencia ASOEX prevalece sobre etiqueta para exportación</h4>
+      <p>Cuando <code>mercado_destino</code> incluye China, UE o USA, usar <code>carencia_asoex</code> en lugar de <code>carencia_etiqueta</code>. Si no hay valor ASOEX, usar etiqueta. Mostrar ambas columnas en el documento.</p>
+    </div>
+
+    <div class="regla">
+      <h4>R006 — Numeración correlativa por predio</h4>
+      <p>El <code>num_oa</code> se genera automáticamente: prefijo 2 letras (<code>SP</code>, <code>KT</code>, <code>PA</code>) + guión + número de 3 dígitos. Jamás reutilizar ni modificar un número emitido.</p>
+    </div>
+
+    <div class="regla">
+      <h4>R007 — Mojamiento según tipo de aplicación (sugerido)</h4>
+      <p>El sistema sugiere el mojamiento automáticamente según el tipo de aplicación seleccionado. El usuario puede modificarlo. Los valores sugeridos están en la tabla §6.</p>
+    </div>
+
+    <div class="regla">
+      <h4>R008 — Estado "confirmada" es irreversible</h4>
+      <p>Una OA confirmada no se puede editar. Solo se puede anular. Una OA anulada no puede reactivarse. Toda modificación a una OA confirmada requiere crear una nueva OA.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 6. MOJAMIENTOS -->
+<div class="seccion">
+  <div class="seccion-titulo">6. Tipos de aplicación y mojamientos sugeridos</div>
+  <div class="seccion-cuerpo">
+    <table class="tabla-moj">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Tipo de aplicación</th>
+          <th>Mojamiento sugerido (L/ha)</th>
+          <th>Referencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>MOSQ</td><td>Control mosquita blanca</td><td class="lha">4 500</td><td>TRV citrus</td></tr>
+        <tr><td>CHANCH</td><td>Control chanchito blanco</td><td class="lha">5 000</td><td>Cobertura total</td></tr>
+        <tr><td>LAV</td><td>Lavado con detergente</td><td class="lha">9 000</td><td>Máxima cobertura</td></tr>
+        <tr><td>FERT</td><td>Fertilizante foliar</td><td class="lha">2 000</td><td>Volumen bajo</td></tr>
+        <tr><td>HERB</td><td>Herbicida</td><td class="lha">3 200</td><td>Callejón/suelo</td></tr>
+        <tr><td>INSEC</td><td>Insecticida / Acaricida general</td><td class="lha">4 000</td><td>TRV estándar</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:8.5pt; color:#555; margin-top:8px;">* TRV = Tree Row Volume. El mojamiento final puede ajustarse según condición del árbol, equipo y velocidad de trabajo.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 7. CATÁLOGO PRODUCTOS -->
+<div class="seccion">
+  <div class="seccion-titulo">7. Catálogo de productos — San Pablo (vigente mayo 2026)</div>
+  <div class="seccion-cuerpo">
+    <table class="tabla-prod">
+      <thead>
+        <tr>
+          <th>Nombre comercial</th>
+          <th>I. Activo</th>
+          <th>Form.</th>
+          <th>Dosis std / 100L</th>
+          <th>Unidad</th>
+          <th>Car. Limón</th>
+          <th>Car. Naranja</th>
+          <th>Car. ASOEX</th>
+          <th>Banda SAG</th>
+          <th>Ord.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Defender Potasio</td>
+          <td>Fosfito de potasio</td>
+          <td>SL</td>
+          <td>300</td>
+          <td>cc</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td class="banda-verde">VERDE</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>Nitrato de Potasio</td>
+          <td>Nitrato de potasio</td>
+          <td>SG</td>
+          <td>3 000</td>
+          <td>g</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td class="banda-verde">VERDE</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>Jabón Potásico Popeye</td>
+          <td>Ác. grasos de potasio</td>
+          <td>SL</td>
+          <td>500</td>
+          <td>cc</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td class="banda-verde">VERDE</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td>Giber Plus SP</td>
+          <td>Ácido giberélico</td>
+          <td>SP</td>
+          <td>50</td>
+          <td>cc</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td class="banda-verde">VERDE</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td>Konan 240 SC</td>
+          <td>Chlorantraniliprole 200 + Lambda-cih. 50</td>
+          <td>SC</td>
+          <td>50</td>
+          <td>cc</td>
+          <td>14</td>
+          <td>14</td>
+          <td>21</td>
+          <td class="banda-cuidado">CUIDADO</td>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td>Ripper Max 75 SG</td>
+          <td>Abamectina 75 g/kg</td>
+          <td>SG</td>
+          <td>1 000</td>
+          <td>g</td>
+          <td>14</td>
+          <td>14</td>
+          <td>30</td>
+          <td class="banda-nocivo">NOCIVO</td>
+          <td>6</td>
+        </tr>
+        <tr>
+          <td>Winspray</td>
+          <td>Aceite mineral parafínico</td>
+          <td>EC</td>
+          <td>1 500</td>
+          <td>cc</td>
+          <td>3</td>
+          <td>3</td>
+          <td>—</td>
+          <td class="banda-verde">VERDE</td>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td>Exirel 200 SC</td>
+          <td>Cyantraniliprole 200 g/L</td>
+          <td>SC</td>
+          <td>50</td>
+          <td>cc</td>
+          <td>7</td>
+          <td>7</td>
+          <td>14</td>
+          <td class="banda-cuidado">CUIDADO</td>
+          <td>8</td>
+        </tr>
+        <tr>
+          <td>Azufre Thiolux Jet</td>
+          <td>Azufre 800 g/kg</td>
+          <td>WG</td>
+          <td>300</td>
+          <td>g</td>
+          <td>3</td>
+          <td>3</td>
+          <td>—</td>
+          <td class="banda-verde">VERDE</td>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td>Borneo 500 SC</td>
+          <td>Etoxazole 500 g/L</td>
+          <td>SC</td>
+          <td>20</td>
+          <td>cc</td>
+          <td style="color:var(--rojo);font-weight:bold">70 ⚠</td>
+          <td>3</td>
+          <td style="color:var(--rojo);font-weight:bold">70 ⚠</td>
+          <td class="banda-cuidado">CUIDADO</td>
+          <td>10</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:8pt; color:#555; margin-top:8px;">
+      * Incompatibilidades: Winspray ↔ Azufre (separar 30 días) &nbsp;|&nbsp; Exirel ↔ Winspray/EC/OD (no mezclar)<br>
+      * Orden de mezcla: número menor = incorporar primero al estanque con agua.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 8. CUARTELES -->
+<div class="seccion">
+  <div class="seccion-titulo">8. Catálogo de cuarteles — San Pablo (52 cuarteles)</div>
+  <div class="seccion-cuerpo">
+    <table class="tabla-cuar">
+      <thead>
+        <tr>
+          <th>N° Cuartel</th>
+          <th>Especie</th>
+          <th>Variedad</th>
+          <th>Ha total</th>
+          <th>Nota</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Limón -->
+        <tr><td>1A</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.50</td><td></td></tr>
+        <tr><td>1B</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.25</td><td></td></tr>
+        <tr><td>1C</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.25</td><td></td></tr>
+        <tr><td>2</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.60</td><td></td></tr>
+        <tr><td>3</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>0.84</td><td></td></tr>
+        <tr><td>4</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>0.84</td><td></td></tr>
+        <tr><td>5</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>5.80</td><td></td></tr>
+        <tr><td>6</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>0.53</td><td></td></tr>
+        <tr><td>7</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.93</td><td></td></tr>
+        <tr><td>8</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.03</td><td></td></tr>
+        <tr><td>9</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>0.92</td><td></td></tr>
+        <tr><td>10A</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.12</td><td></td></tr>
+        <tr><td>10B</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.47</td><td></td></tr>
+        <tr><td>11</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.28</td><td></td></tr>
+        <tr><td>12</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>0.78</td><td></td></tr>
+        <tr><td>13</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.25</td><td></td></tr>
+        <tr><td>14</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.78</td><td></td></tr>
+        <tr><td>15</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>3.79</td><td></td></tr>
+        <tr><td>16</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>4.31</td><td></td></tr>
+        <tr><td>17</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.49</td><td></td></tr>
+        <tr><td>18</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>4.73</td><td></td></tr>
+        <tr><td>19</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>5.14</td><td></td></tr>
+        <tr><td>20</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>5.14</td><td></td></tr>
+        <tr><td>21</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>4.36</td><td></td></tr>
+        <tr><td>21B</td><td><span class="chip-limon">Limón</span></td><td>Lemon Pink</td><td>0.50</td><td><span class="chip-ensayo">Ensayo</span></td></tr>
+        <tr><td>22</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.83</td><td></td></tr>
+        <tr><td>23</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.61</td><td></td></tr>
+        <tr><td>24</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>3.85</td><td></td></tr>
+        <tr><td>25</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>5.87</td><td></td></tr>
+        <tr><td>26</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.73</td><td></td></tr>
+        <tr><td>27</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>3.96</td><td></td></tr>
+        <tr><td>28</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>3.13</td><td></td></tr>
+        <tr><td>29A</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.22</td><td></td></tr>
+        <tr><td>29B</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>0.96</td><td></td></tr>
+        <tr><td>29C</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>0.42</td><td></td></tr>
+        <tr><td>30</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.23</td><td></td></tr>
+        <tr><td>31</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.67</td><td></td></tr>
+        <tr><td>32</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>1.72</td><td></td></tr>
+        <tr><td>33</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>2.57</td><td></td></tr>
+        <tr><td>34</td><td><span class="chip-limon">Limón</span></td><td>Fino 49</td><td>3.10</td><td></td></tr>
+        <!-- Naranja -->
+        <tr><td>1(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Olinda Valencia</td><td>0.59</td><td></td></tr>
+        <tr><td>2(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Olinda Valencia</td><td>2.30</td><td></td></tr>
+        <tr><td>3(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Olinda Valencia</td><td>3.27</td><td></td></tr>
+        <tr><td>4(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Olinda Valencia</td><td>4.49</td><td></td></tr>
+        <tr><td>5(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Olinda Valencia</td><td>4.36</td><td></td></tr>
+        <tr><td>6(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Barnfield</td><td>0.93</td><td></td></tr>
+        <tr><td>7(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Barnfield</td><td>3.14</td><td></td></tr>
+        <tr><td>8(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Barnfield</td><td>1.43</td><td></td></tr>
+        <tr><td>9(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Rodhe</td><td>1.87</td><td></td></tr>
+        <tr><td>10(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Rodhe</td><td>2.67</td><td></td></tr>
+        <tr><td>11(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Lane Late</td><td>2.10</td><td></td></tr>
+        <tr><td>12(N)</td><td><span class="chip-naranja">Naranja</span></td><td>Lane Late</td><td>1.82</td><td></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:8.5pt; color:#555; margin-top:8px;">
+      Total: <strong>40 cuarteles Limón</strong> (incluyendo 21B ensayo) + <strong>12 cuarteles Naranja</strong> = 52 cuarteles.<br>
+      Superficie total Limón: ~101.6 ha &nbsp;|&nbsp; Superficie total Naranja: ~28.9 ha &nbsp;|&nbsp; <strong>Total predio: ~130.5 ha</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 9. FÓRMULAS RESUMEN -->
+<div class="seccion">
+  <div class="seccion-titulo">9. Resumen de fórmulas de cálculo</div>
+  <div class="seccion-cuerpo">
+    <table class="tabla-spec">
+      <thead>
+        <tr><th style="width:30%">Variable</th><th style="width:70%">Fórmula</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="campo-nombre">Dosis/Ha</td>
+          <td><span class="formula">dosis_100L × mojamiento_Lha / 100</span> → unidad: cc/ha o g/ha</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">Dosis maquinada</td>
+          <td><span class="formula">dosis_100L × capacidad_estanque / 100</span> → cc o g por estanque</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">Litros cuartel</td>
+          <td><span class="formula">ha_efectivas × mojamiento_Lha</span> → litros de caldo para ese cuartel</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">Maquinadas cuartel</td>
+          <td><span class="formula">litros_cuartel / capacidad_estanque</span> → puede ser decimal (ej: 3.7 maquinadas)</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">Necesidad total producto</td>
+          <td><span class="formula">dosis_ha × ha_totales</span> → convertir a kg o L si unidad = g o cc ≥ 1000</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">Fecha emisión (retroactiva)</td>
+          <td><span class="formula">fecha_inicio − 2 días hábiles</span> (omite sábado y domingo)</td>
+        </tr>
+        <tr>
+          <td class="campo-nombre">Fecha desde</td>
+          <td><span class="formula">fecha_emision + 1 día hábil</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  San Pedro SpA · ERP Órdenes de Aplicación v1.0 · Generado Mayo 2026<br>
+  Documento interno — uso técnico agronómico
+</div>
+
+</body>
+</html>
