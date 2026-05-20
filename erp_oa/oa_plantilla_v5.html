@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orden de Aplicación v5 — San Pedro SpA</title>
+<style>
+:root{
+  --cp:#2d6a4f;--cp-d:#1a4d2e;--cp-m:#74c69d;--cp-l:#eaf4ef;--cp-ll:#f5faf7;
+  --cn:#424242;--cn-d:#1a1a1a;--cn-m:#757575;--cn-l:#eeeeee;--cn-ll:#fafafa;
+  --ab:#fffde7;--ab-b:#ffe082;--ab-t:#7a5c00;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:9pt;background:#c8c8c8;color:#111}
+@page{size:letter portrait;margin:13mm 14mm 11mm 14mm}
+.page{width:215.9mm;background:white;margin:20px auto;padding:11mm 13mm 9mm 13mm;box-shadow:0 4px 20px rgba(0,0,0,.28)}
+@media print{
+  body{background:white}
+  .page{margin:0;padding:11mm 13mm 9mm 13mm;box-shadow:none;width:100%}
+  .no-print{display:none!important}
+  [contenteditable]{outline:none}
+  .epp-chk,.jcell{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page-2{page-break-before:always}
+}
+
+/* ── Toolbar ── */
+.toolbar{background:var(--cp-d);color:white;padding:9px 18px;display:flex;gap:8px;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.toolbar h2{font-size:10pt;flex:1}
+.tbtn{padding:5px 13px;border:none;border-radius:4px;cursor:pointer;font-size:8pt;font-weight:bold;color:white;transition:opacity .18s}
+.tbtn:hover{opacity:.8}
+.tbtn-cfg{background:var(--cn)}
+.tbtn-csv{background:#1558a7}
+.tbtn-prt{background:var(--cp)}
+
+/* ── Config ── */
+.cfg-panel{max-width:215.9mm;margin:0 auto;background:#2c2c2c;color:#eee;padding:14px 18px;display:none;gap:14px;flex-wrap:wrap}
+.cfg-panel.on{display:flex}
+.cfg-g{background:#3a3a3a;border-radius:6px;padding:10px 14px;flex:1;min-width:160px}
+.cfg-g h4{font-size:7.5pt;text-transform:uppercase;color:var(--cp-m);margin-bottom:7px;border-bottom:1px solid #555;padding-bottom:3px}
+.cfg-r{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.cfg-r label{font-size:7pt;color:#bbb;min-width:86px}
+.cfg-r input[type=color]{width:34px;height:22px;border:none;cursor:pointer;border-radius:3px;padding:0}
+.cfg-r input[type=text],.cfg-r input[type=file]{flex:1;background:#555;border:1px solid #666;border-radius:3px;padding:2px 5px;color:#eee;font-size:7pt}
+.cfg-r textarea{flex:1;background:#444;border:1px solid #666;border-radius:3px;padding:3px 5px;color:#eee;font-size:6.8pt;resize:vertical;min-height:52px;line-height:1.55}
+.sw-row{display:flex;gap:3px;margin:3px 0 5px}
+.sw{width:16px;height:16px;border-radius:3px;border:1px solid rgba(255,255,255,.15)}
+.cfg-btn{background:var(--cp);color:white;border:none;border-radius:3px;padding:3px 9px;font-size:7pt;cursor:pointer;margin-top:3px;margin-right:3px}
+.cfg-btn.sec{background:#555}
+
+/* ── Logo ── */
+.logo-box{width:58px;height:48px;border:1.5px dashed var(--cn-l);display:flex;align-items:center;justify-content:center;border-radius:3px;overflow:hidden;flex-shrink:0;background:var(--cn-ll)}
+.logo-ph{font-size:5.5pt;color:var(--cn-m);text-align:center;line-height:1.5;pointer-events:none}
+
+/* ── Encabezado ── */
+.oa-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid var(--cn-d);padding-bottom:5px;margin-bottom:5px;gap:8px}
+.oa-head-left{display:flex;align-items:flex-start;gap:9px;flex:1}
+.oa-titulo{font-size:11pt;font-weight:bold;text-transform:uppercase;letter-spacing:.4px}
+.oa-sub{font-size:7pt;color:var(--cn-m);margin-top:2px}
+.oa-folio{text-align:right;flex-shrink:0}
+.f-lbl{font-size:6pt;color:var(--cn-m);text-transform:uppercase;font-weight:bold}
+.f-num{font-size:16pt;font-weight:bold;color:var(--cp-d);line-height:1.1}
+.e-lbl{font-size:6pt;color:var(--cn-m);text-transform:uppercase;margin-top:2px}
+.e-val{font-size:9.5pt;font-weight:bold}
+
+/* ── Bloques ── */
+.bloque{border:1px solid var(--cn-l);border-radius:3px;margin-bottom:4px;overflow:hidden}
+.b-tit{color:white;font-size:6.5pt;font-weight:bold;text-transform:uppercase;padding:2px 7px;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center}
+.b-tit.cn{background:var(--cn)}
+.b-tit.cp{background:var(--cp-d)}
+.b-tit .b-fecha{font-weight:normal;font-size:8pt;text-transform:none;letter-spacing:0;color:rgba(255,255,255,.93)}
+.b-body{padding:5px 7px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:3px 6px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:3px 6px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:3px 6px}
+.campo .cl{font-size:5.8pt;font-weight:bold;color:var(--cn-m);text-transform:uppercase}
+.campo .cl::after{content:': '}
+.campo .cv{font-size:8.5pt;font-weight:bold;border-bottom:1px solid var(--cn-l);display:block}
+.row2{display:grid;grid-template-columns:55% 45%;gap:4px;margin-bottom:4px}
+
+/* ── Chips ── */
+.chips{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0}
+.chip{background:var(--cp-l);border:1px solid var(--cp-m);border-radius:3px;padding:2px 6px;font-size:7.5pt;font-weight:bold;color:var(--cp-d)}
+.sup-box{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--cp);border-radius:3px;padding:2px 8px;font-size:8pt;font-weight:bold;color:var(--cp-d);margin-top:3px}
+
+/* ── Calibración ── */
+.cal-nota{font-size:5.8pt;color:var(--cn-m);margin:3px 0 2px;font-style:italic}
+
+/* ── Justificación ── */
+.t-just td{font-size:7.5pt;padding:2px 5px;border:1px solid #ccc;background:var(--cn-ll)}
+.t-just td.jmot{text-align:left;font-size:8pt}
+.t-just td.jcell{cursor:pointer;font-size:8.5pt;font-weight:bold;background:white;width:12%;user-select:none}
+.t-just td.jcell.j-on{background:var(--cn-d);color:white}
+.t-just td.jcell:hover:not(.j-on){background:var(--cn-l)}
+.otros-txt{border:none;border-bottom:1px solid var(--cn-m);outline:none;min-width:80px;font-size:7.5pt;background:transparent;font-family:Arial,sans-serif}
+
+/* ── Notas bajo tabla ── */
+.nota-ph{background:var(--ab);border:1px solid var(--ab-b);border-left:3px solid var(--ab-b);border-radius:2px;font-size:6.2pt;color:var(--ab-t);padding:3px 7px;margin-bottom:3px}
+.nota-cosecha{background:#f0f7ff;border:1px solid #bee3f8;border-left:3px solid #63b3ed;border-radius:2px;font-size:6.2pt;color:#2c5282;padding:3px 7px;margin-bottom:3px}
+
+/* ── Tablas ── */
+table{width:100%;border-collapse:collapse;margin-bottom:4px}
+th{font-size:6.5pt;font-weight:bold;padding:3px;text-align:center;border:1px solid #555;line-height:1.2;background:var(--cn-d);color:white}
+td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;vertical-align:middle}
+.t-prod td{background:var(--cp-ll)}
+.t-prod td.pn{text-align:left;font-weight:bold;background:var(--cp-l)}
+
+/* ── EPP ── */
+.sec-lbl{background:var(--cn-d);color:white;font-size:6.5pt;font-weight:bold;text-transform:uppercase;padding:2px 7px;letter-spacing:.5px}
+.epp-wrap{border:1px solid var(--cn-l);border-top:none;background:var(--cn-ll);padding:5px 2px}
+.epp-grid{display:flex;justify-content:space-around;align-items:flex-start;gap:2px}
+.epp-item{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;cursor:pointer;user-select:none}
+.epp-lbl{font-size:5.8pt;text-align:center;color:var(--cn);font-weight:bold;text-transform:uppercase;line-height:1.2;min-height:13px}
+.epp-box{width:40px;height:40px;border:1.5px solid var(--cn);background:white;display:flex;align-items:center;justify-content:center;border-radius:3px}
+.epp-box svg{width:32px;height:32px}
+.epp-chk{width:13px;height:13px;border:1.5px solid var(--cn);display:flex;align-items:center;justify-content:center;font-size:9pt;font-weight:bold;background:white;border-radius:1px}
+.epp-chk.on{background:var(--cn-d);color:white}
+.epp-chk.on::before{content:'✕';font-size:8pt}
+
+/* ── Instrucciones ── */
+.instruc{border:1px solid var(--cn-l);margin-bottom:4px}
+.instruc-h{background:var(--cn);color:white;font-size:6.2pt;font-weight:bold;text-transform:uppercase;padding:2px 7px;display:flex;justify-content:space-between;align-items:center}
+.instruc-h .hint{font-weight:normal;font-style:italic;opacity:.65}
+.instruc-b{padding:4px 8px;font-size:7.2pt;line-height:1.7;outline:none;min-height:28px}
+.instruc-b:focus{background:var(--ab)}
+
+/* ── Firmas ── */
+.firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:8px}
+.f-zona{text-align:center;font-size:7.5pt}
+.f-img{height:36px;display:flex;align-items:flex-end;justify-content:center}
+.f-img img{max-height:34px;max-width:120px;display:none}
+.f-linea{border-top:1.5px solid var(--cn-d);padding-top:3px;margin-top:0}
+.f-nombre{font-size:8pt;font-weight:bold;color:var(--cn-d);display:block}
+.f-rol{font-size:6pt;color:var(--cn-m);margin-top:1px;display:block}
+
+/* ── Página 2 ── */
+.p2-tit{text-align:center;font-size:11pt;font-weight:bold;text-transform:uppercase;border-bottom:2.5px solid var(--cn-d);padding-bottom:4px;margin-bottom:4px}
+.p2-sub{text-align:center;font-size:7pt;color:var(--cn-m);margin-bottom:7px}
+.t-desg th{background:var(--cn-d);color:white;font-size:6.3pt;padding:3px}
+.t-desg td{background:var(--cp-ll);font-size:7.3pt}
+.t-desg td.dn{background:var(--cp-l);font-weight:bold;text-align:left;padding-left:5px}
+.t-desg tr.tot td{background:var(--cn-l);font-weight:bold;border-top:2px solid var(--cn-d)}
+.nota{font-size:6.2pt;color:var(--cn-m);margin-top:4px;font-style:italic}
+</style>
+</head>
+<body>
+
+<!-- ═════ TOOLBAR ═════ -->
+<div class="toolbar no-print">
+  <h2>ERP OA · San Pedro SpA — SP-042</h2>
+  <button class="tbtn tbtn-cfg" onclick="toggleCfg()">⚙ Configuración</button>
+  <button class="tbtn tbtn-csv" onclick="exportCSV()">⬇ Exportar CSV</button>
+  <button class="tbtn tbtn-prt" onclick="window.print()">🖨 Imprimir / PDF</button>
+</div>
+
+<!-- ═════ CONFIG ═════ -->
+<div class="cfg-panel no-print" id="cfgPanel">
+
+  <!-- Colores -->
+  <div class="cfg-g">
+    <h4>Color principal</h4>
+    <div class="cfg-r"><label>Base:</label><input type="color" value="#2d6a4f" oninput="applyColor('cp',this.value)"><span id="cp-hex" style="font-size:6.5pt;color:#aaa">#2d6a4f</span></div>
+    <div class="sw-row" id="cp-sw">
+      <div class="sw" style="background:#1a4d2e"></div><div class="sw" style="background:#2d6a4f"></div>
+      <div class="sw" style="background:#74c69d"></div><div class="sw" style="background:#eaf4ef"></div><div class="sw" style="background:#f5faf7"></div>
+    </div>
+    <h4 style="margin-top:8px">Color neutro</h4>
+    <div class="cfg-r"><label>Base:</label><input type="color" value="#424242" oninput="applyColor('cn',this.value)"><span id="cn-hex" style="font-size:6.5pt;color:#aaa">#424242</span></div>
+    <div class="sw-row" id="cn-sw">
+      <div class="sw" style="background:#1a1a1a"></div><div class="sw" style="background:#424242"></div>
+      <div class="sw" style="background:#757575"></div><div class="sw" style="background:#eeeeee"></div><div class="sw" style="background:#fafafa"></div>
+    </div>
+  </div>
+
+  <!-- Datos empresa -->
+  <div class="cfg-g" style="flex:2;min-width:230px">
+    <h4>Datos empresa</h4>
+    <div class="cfg-r"><label>Razón Social:</label><input type="text" value="San Pedro SpA" oninput="sync('razon',this.value)"></div>
+    <div class="cfg-r"><label>Predio/Productor:</label><input type="text" value="Campo San Pablo" oninput="sync('predio',this.value)"></div>
+    <div class="cfg-r"><label>CSG:</label><input type="text" value="76.123.456-7" oninput="sync('csg',this.value)"></div>
+    <div class="cfg-r"><label>Dirección:</label><input type="text" value="Camino El Romero s/n" oninput="sync('dir',this.value)"></div>
+    <div class="cfg-r"><label>Localidad:</label><input type="text" value="La Serena, Elqui, Coquimbo" oninput="sync('localidad',this.value)"></div>
+    <h4 style="margin-top:8px">Logo empresa</h4>
+    <div class="cfg-r" style="flex-direction:column;align-items:flex-start;gap:3px">
+      <input type="file" accept=".png,.svg,.jpg" onchange="loadLogo(event)">
+    </div>
+    <div id="logo-prev" style="margin-top:4px;min-height:28px;border:1px dashed #555;display:flex;align-items:center;justify-content:center;font-size:6.5pt;color:#888">Sin logo</div>
+    <button class="cfg-btn sec" onclick="clearLogo()" style="margin-top:4px">Quitar logo</button>
+  </div>
+
+  <!-- Firmas -->
+  <div class="cfg-g">
+    <h4>Firmas predefinidas</h4>
+    <div class="cfg-r"><label>Resp. Técnico:</label><input type="text" id="cfg-rt" placeholder="Ing. Agr. Nombre" oninput="syncFirma('rt',this.value)"></div>
+    <div class="cfg-r"><label>Emisor:</label><input type="text" id="cfg-emisor" placeholder="Nombre del emisor" oninput="syncFirma('emisor',this.value)"></div>
+    <div class="cfg-r"><label>Recibe (título):</label><input type="text" id="cfg-recibe" value="Recibe" oninput="syncFirma('recibe',this.value)"></div>
+    <hr style="border:none;border-top:1px solid #555;margin:7px 0">
+    <div style="font-size:6.5pt;color:#aaa;margin-bottom:5px">Firma Resp. Técnico (imagen PNG/SVG):</div>
+    <div class="cfg-r" style="flex-direction:column;align-items:flex-start;gap:3px">
+      <input type="file" accept=".png,.svg,.jpg" onchange="loadFirma(event)">
+    </div>
+    <div id="firma-prev" style="margin-top:4px;min-height:28px;border:1px dashed #555;display:flex;align-items:center;justify-content:center;font-size:6.5pt;color:#888">Sin firma</div>
+    <button class="cfg-btn sec" onclick="clearFirma()" style="margin-top:4px">Quitar firma</button>
+  </div>
+
+  <!-- Textos instrucciones -->
+  <div class="cfg-g" style="flex:2;min-width:260px">
+    <h4>Instrucciones predefinidas</h4>
+    <div style="font-size:6.5pt;color:#aaa;margin-bottom:6px">Define hasta 3 textos y aplica al documento con el botón.</div>
+    <div class="cfg-r" style="flex-direction:column;align-items:flex-start;gap:3px">
+      <label style="min-width:auto">Preset 1:</label>
+      <textarea id="txt-pre1">• Use siempre EPP completo indicado. Guárdelo lavado en el lugar asignado.
+• No aplicar con temperatura > 25 °C ni viento > 3 km/h.
+• Verifique que SAG y apicultores estén notificados.
+• Prohibido aplicar en zonas de conservación, cursos de agua o pasos de fauna.
+• No debe haber terceros durante la aplicación.</textarea>
+      <button class="cfg-btn" onclick="applyText(1)">Aplicar preset 1</button>
+    </div>
+    <div class="cfg-r" style="flex-direction:column;align-items:flex-start;gap:3px;margin-top:6px">
+      <label style="min-width:auto">Preset 2:</label>
+      <textarea id="txt-pre2">• EPP obligatorio según ficha de seguridad de cada producto.
+• Verifique que SAG y apicultores estén notificados.
+• Condiciones máximas: T° 28 °C · Viento 5 km/h · Sin lluvia en 4 h.
+• Prohibido aplicar en zonas de conservación o cursos de agua.
+• No debe haber terceros durante la aplicación.</textarea>
+      <button class="cfg-btn" onclick="applyText(2)">Aplicar preset 2</button>
+    </div>
+    <div class="cfg-r" style="flex-direction:column;align-items:flex-start;gap:3px;margin-top:6px">
+      <label style="min-width:auto">Preset 3 (personalizado):</label>
+      <textarea id="txt-pre3" placeholder="Escribir texto personalizado..."></textarea>
+      <button class="cfg-btn" onclick="applyText(3)">Aplicar preset 3</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ PÁGINA 1 ═══════════════ -->
+<div class="page" id="p1">
+
+  <!-- ENCABEZADO -->
+  <div class="oa-head">
+    <div class="oa-head-left">
+      <div class="logo-box" id="logoBox">
+        <span class="logo-ph">LOGO<br>EMPRESA</span>
+        <img id="logo-img" src="" alt="logo" style="display:none;max-height:44px;max-width:52px;object-fit:contain">
+      </div>
+      <div>
+        <div class="oa-titulo">Orden de Aplicación de Agrocomplementos</div>
+        <div class="oa-sub">Código: R03/P02 · Gestión de Plaguicidas y Fertilización</div>
+      </div>
+    </div>
+    <div class="oa-folio">
+      <div class="f-lbl">N. Orden</div>
+      <div class="f-num">SP-042</div>
+      <div class="e-lbl">Fecha de Emisión</div>
+      <div class="e-val">08-05-2026</div>
+    </div>
+  </div>
+
+  <!-- BLOQUE AGRÍCOLA (Fecha Inicio en header derecha) -->
+  <div class="bloque">
+    <div class="b-tit cn">
+      <span>Datos de la Agrícola</span>
+      <span class="b-fecha">Fecha Inicio Aplicación: &nbsp;<strong>10-05-2026</strong></span>
+    </div>
+    <div class="b-body">
+      <div class="g2" style="margin-bottom:3px">
+        <div class="campo"><span class="cl">Razón Social</span><span class="cv" data-f="razon">San Pedro SpA</span></div>
+        <div class="campo"><span class="cl">Dirección</span><span class="cv" data-f="dir">Camino El Romero s/n</span></div>
+      </div>
+      <div class="g3">
+        <div class="campo"><span class="cl">Predio / Productor</span><span class="cv" data-f="predio">Campo San Pablo</span></div>
+        <div class="campo"><span class="cl">CSG</span><span class="cv" data-f="csg">76.123.456-7</span></div>
+        <div class="campo"><span class="cl">Localidad</span><span class="cv" data-f="localidad">La Serena, Elqui, Coquimbo</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN + MAQUINARIA -->
+  <div class="row2">
+    <div class="bloque" style="margin-bottom:0">
+      <div class="b-tit cp">Datos de Aplicación</div>
+      <div class="b-body">
+        <div class="g2" style="margin-bottom:3px">
+          <div class="campo"><span class="cl">Especie</span><span class="cv">Limón</span></div>
+          <div class="campo"><span class="cl">Variedad</span><span class="cv">Fino 49</span></div>
+        </div>
+        <div class="campo" style="margin-bottom:3px">
+          <span class="cl">Cuarteles</span>
+          <div class="chips">
+            <span class="chip">15 · 3,79 ha</span><span class="chip">16 · 4,31 ha</span>
+            <span class="chip">18 · 4,73 ha</span><span class="chip">19 · 5,14 ha</span>
+            <span class="chip">20 · 5,14 ha</span>
+          </div>
+        </div>
+        <div class="sup-box">Superficie total: <strong>23,11 ha</strong></div>
+      </div>
+    </div>
+    <div class="bloque" style="margin-bottom:0">
+      <div class="b-tit cn">Maquinaria y Aplicación</div>
+      <div class="b-body">
+        <div class="g2" style="margin-bottom:3px">
+          <div class="campo"><span class="cl">Mojamiento (L/ha)</span><span class="cv">4.500</span></div>
+          <div class="campo"><span class="cl">Cap. Estanque (L)</span><span class="cv">2.000</span></div>
+        </div>
+        <div class="g2" style="margin-bottom:3px">
+          <div class="campo"><span class="cl">Forma Aplicación</span><span class="cv">Pulverizadora</span></div>
+          <div class="campo"><span class="cl">Mercado Destino</span><span class="cv">Exportación — China/UE</span></div>
+        </div>
+        <div class="g2" style="margin-bottom:2px">
+          <div class="campo"><span class="cl">Reingreso</span><span class="cv">24 h · Emb./Lact.: 48 h</span></div>
+          <div class="campo"><span class="cl">Maquinadas Est.</span><span class="cv">≈ 52</span></div>
+        </div>
+        <div class="cal-nota">* Verificar velocidad y presión en tabla de calibraciones. Usar sugeridas:</div>
+        <div class="g4">
+          <div class="campo"><span class="cl">Presión (bar)</span><span class="cv" style="font-size:8pt">___</span></div>
+          <div class="campo"><span class="cl">RPM motor</span><span class="cv" style="font-size:8pt">___</span></div>
+          <div class="campo"><span class="cl">Velocidad km/h</span><span class="cv" style="font-size:8pt">___</span></div>
+          <div class="campo"><span class="cl">Marcha</span><span class="cv" style="font-size:8pt">___</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JUSTIFICACIÓN APLICACIÓN -->
+  <div class="bloque">
+    <div class="b-tit cn">Justificación de Aplicación</div>
+    <div class="b-body" style="padding:3px 7px">
+      <table class="t-just" style="margin-bottom:0">
+        <thead>
+          <tr>
+            <th style="text-align:left;width:72%">Motivo</th>
+            <th style="width:14%">SI</th>
+            <th style="width:14%">NO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="jmot">Plaga / Maleza Superó Umbral</td><td class="jcell j-on" onclick="markJustif(this)">✕</td><td class="jcell" onclick="markJustif(this)"></td></tr>
+          <tr><td class="jmot">Condición Clima Favorable</td><td class="jcell j-on" onclick="markJustif(this)">✕</td><td class="jcell" onclick="markJustif(this)"></td></tr>
+          <tr><td class="jmot">Preventivo</td><td class="jcell j-on" onclick="markJustif(this)">✕</td><td class="jcell" onclick="markJustif(this)"></td></tr>
+          <tr><td class="jmot">Nutricional</td><td class="jcell j-on" onclick="markJustif(this)">✕</td><td class="jcell" onclick="markJustif(this)"></td></tr>
+          <tr><td class="jmot">Otros (Indicar): <input class="otros-txt" type="text" placeholder="__________________________"></td><td class="jcell" onclick="markJustif(this)"></td><td class="jcell" onclick="markJustif(this)"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TABLA PRODUCTOS -->
+  <div class="sec-lbl">Productos y cantidades necesarias</div>
+  <table class="t-prod">
+    <thead>
+      <tr>
+        <th style="width:17%;text-align:left">Nombre comercial</th>
+        <th style="width:12%">Ingrediente activo</th>
+        <th style="width:9%">Objetivo</th>
+        <th style="width:8%">Dosis/100L<br><span style="font-weight:normal">(cc ó g)</span></th>
+        <th style="width:7%">Dosis/Ha<br><span style="font-weight:normal">(L ó kg)</span></th>
+        <th style="width:9%">Nec. Maq.<br><span style="font-weight:normal">(cc ó g)</span></th>
+        <th style="width:8%">Nec. Total<br><span style="font-weight:normal">(L ó kg)</span></th>
+        <th style="width:14%">Carencia<br><span style="font-weight:normal">(días / mercado)</span></th>
+        <th style="width:8%">Usos/<br>Temp.</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pn">Defender Potasio</td>
+        <td>Fosfito de potasio</td>
+        <td>Nutrición / Resist.</td>
+        <td>300</td><td>13,5</td><td>6.000</td><td>312 L</td>
+        <td style="font-size:6.8pt">Sin carencia</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="pn">Ripper Max 75 SG</td>
+        <td>Abamectina 75 g/kg</td>
+        <td>Ácaros / Mosquita</td>
+        <td>1.000</td><td>45</td><td>20.000</td><td>1.040 kg</td>
+        <td style="font-size:6.8pt">(Etiq.) 14 · (ASOEX) 30</td>
+        <td style="font-size:8pt">1 de 3</td>
+      </tr>
+      <tr>
+        <td class="pn">Exirel 200 SC</td>
+        <td>Cyantraniliprole 200 g/L</td>
+        <td>Trips / Lepid.</td>
+        <td>50</td><td>2,25</td><td>1.000</td><td>52 L</td>
+        <td style="font-size:6.8pt">(Etiq.) 7 · (ASOEX) 14</td>
+        <td style="font-size:8pt">1 de 2</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- NOTAS BAJO TABLA -->
+  <div class="nota-cosecha">* Fecha posible Cosecha = Fecha última aplicación + carencia mayor + 1 día.&nbsp; Carencia mayor en este OA: 30 días (Ripper Max ASOEX) → Cosecha no antes del <strong>10-06-2026</strong>.</div>
+  <div class="nota-ph">Nota pH: Regular pH del agua de aplicación. Rango ideal 5,5–6,5. Si pH &gt; 7,0, corregir antes de agregar productos.</div>
+
+  <!-- INSTRUCCIONES -->
+  <div class="instruc">
+    <div class="instruc-h">
+      Instrucciones de seguridad y condiciones de aplicación
+      <span class="hint no-print">✏ Clic para editar</span>
+    </div>
+    <div class="instruc-b" id="instruc-b" contenteditable="true">
+      • Use siempre EPP completo indicado en la sección de protección personal. Guárdelo lavado en el lugar asignado.<br>
+      • No aplicar con temperatura &gt; 25 °C ni viento &gt; 3 km/h.<br>
+      • Verifique que SAG y apicultores estén notificados.<br>
+      • Prohibido aplicar en zonas de conservación, cursos de agua o pasos de fauna.<br>
+      • No debe haber terceros durante la aplicación.
+    </div>
+  </div>
+
+  <!-- FIRMAS -->
+  <div class="firmas">
+    <div class="f-zona">
+      <div class="f-img"><img id="firma-rt" src="" alt="firma"></div>
+      <div class="f-linea">
+        <span class="f-nombre" data-f="rt-nombre">___________________________</span>
+        <span class="f-rol">Responsable Técnico</span>
+      </div>
+    </div>
+    <div class="f-zona">
+      <div class="f-img"></div>
+      <div class="f-linea">
+        <span class="f-nombre" data-f="emisor-nombre">___________________________</span>
+        <span class="f-rol">Emisor</span>
+      </div>
+    </div>
+    <div class="f-zona">
+      <div class="f-img"></div>
+      <div class="f-linea">
+        <span class="f-nombre">&nbsp;</span>
+        <span class="f-rol" data-f="recibe">Recibe</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /p1 -->
+
+<!-- ═══════════════ PÁGINA 2 — DESGLOSE + EPP ═══════════════ -->
+<div class="page page-2" id="p2">
+
+  <div class="p2-tit">Desglose por cuartel para la aplicación</div>
+  <div class="p2-sub">
+    N. Orden SP-042 · Campo San Pablo · Emisión: 08-05-2026 · Inicio: 10-05-2026 ·
+    Mojamiento: 4.500 L/ha · Estanque: 2.000 L
+  </div>
+
+  <table class="t-desg">
+    <thead>
+      <tr>
+        <th style="width:8%;text-align:left">Cuartel</th>
+        <th style="width:7%">Sup.<br>(ha)</th>
+        <th style="width:9%">Vol.<br>solución<br>(L)</th>
+        <th style="width:8%">Maq.<br>completas<br>×2.000 L</th>
+        <th style="width:8%">Litros<br>adicionales</th>
+        <th style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">FERT · Ord.1</span><br>Defender Potasio<br>(L)</th>
+        <th style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">ACAR · Ord.2</span><br>Ripper Max 75 SG<br>(kg)</th>
+        <th style="width:13%"><span style="font-size:6pt;font-weight:normal;opacity:.75">INSC · Ord.3</span><br>Exirel 200 SC<br>(L)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="dn">15</td><td>3,79</td><td>17.055</td><td>8</td><td>1.055</td><td>51,2</td><td>170,6</td><td>8,5</td></tr>
+      <tr><td class="dn">16</td><td>4,31</td><td>19.395</td><td>9</td><td>1.395</td><td>58,2</td><td>194,0</td><td>9,7</td></tr>
+      <tr><td class="dn">18</td><td>4,73</td><td>21.285</td><td>10</td><td>1.285</td><td>63,9</td><td>212,9</td><td>10,6</td></tr>
+      <tr><td class="dn">19</td><td>5,14</td><td>23.130</td><td>11</td><td>1.130</td><td>69,4</td><td>231,3</td><td>11,6</td></tr>
+      <tr><td class="dn">20</td><td>5,14</td><td>23.130</td><td>11</td><td>1.130</td><td>69,4</td><td>231,3</td><td>11,6</td></tr>
+      <tr class="tot"><td style="text-align:left;padding-left:5px">TOTAL</td><td>23,11</td><td>103.995</td><td>51</td><td>1.995</td><td>312,1</td><td>1.040,1</td><td>52,0</td></tr>
+    </tbody>
+  </table>
+
+  <p class="nota">* Maquinada completa = 2.000 L de solución. Litros adicionales = maquinada parcial. FERT=Fertilizante, ACAR=Acaricida, INSC=Insecticida SC. Ord.= Orden de incorporación al estanque.</p>
+  <p class="nota">* Cantidades referenciales según calibración vigente. Verificar nivel de estanque al iniciar cada carga.</p>
+  <p class="nota" style="margin-top:2px">* Fecha posible Cosecha = Fecha última aplicación + carencia mayor + 1 día. Cosecha no antes del <strong>10-06-2026</strong>.</p>
+
+  <!-- EPP (movido a página 2) -->
+  <div class="sec-lbl" style="margin-top:8px">Equipo de Protección Personal requerido — hacer clic para marcar</div>
+  <div class="epp-wrap">
+    <div class="epp-grid">
+
+      <!-- GUANTES -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Guantes</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M8,50 L8,28 Q8,23 12,23"/>
+            <path d="M38,50 L38,28 Q38,23 34,23"/>
+            <path d="M8,50 Q8,53 23,53 Q38,53 38,50"/>
+            <line x1="8" y1="44" x2="38" y2="44"/>
+            <path d="M12,23 L12,11 Q12,8 14.5,8 Q17,8 17,11 L17,23"/>
+            <path d="M17,23 L17,9 Q17,6 20,6 Q23,6 23,9 L23,23"/>
+            <path d="M23,23 L23,10 Q23,7 26,7 Q29,7 29,10 L29,23"/>
+            <path d="M29,23 L29,13 Q29,10 32,10 Q35,10 35,13 L35,23"/>
+            <path d="M8,32 Q5,28 7,22 Q10,16 15,19 L15,23"/>
+            <path d="M14,36 Q23,34 33,36" stroke-width="0.9"/>
+            <line x1="17" y1="23" x2="17" y2="27" stroke-width="0.8"/>
+            <line x1="23" y1="23" x2="23" y2="27" stroke-width="0.8"/>
+            <line x1="29" y1="23" x2="29" y2="27" stroke-width="0.8"/>
+          </svg>
+        </div>
+        <div class="epp-chk on"></div>
+      </div>
+
+      <!-- BOTAS -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Botas</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M14,4 L14,34 Q14,38 18,40"/>
+            <path d="M26,4 L26,30 Q28,37 32,40"/>
+            <path d="M14,4 Q20,2 26,4"/>
+            <path d="M18,40 Q14,42 10,44 Q8,46 8,48 Q8,51 12,51 L36,51 Q40,51 40,48 Q40,45 36,44 Q34,44 34,43 L32,40"/>
+            <path d="M8,48 L40,48" stroke-width="2.2"/>
+            <path d="M16,38 Q22,36 30,38" stroke-width="0.9"/>
+            <path d="M12,49 Q22,47 36,49" stroke-width="0.8"/>
+          </svg>
+        </div>
+        <div class="epp-chk on"></div>
+      </div>
+
+      <!-- PROTECTOR OCULAR -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Protector<br>Ocular</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M4,26 Q4,16 14,16 Q20,16 22,22 Q22,30 14,30 Q4,30 4,26Z"/>
+            <path d="M44,26 Q44,16 34,16 Q28,16 26,22 Q26,30 34,30 Q44,30 44,26Z"/>
+            <path d="M22,22 Q24,20 26,22"/>
+            <ellipse cx="13" cy="24" rx="6" ry="5" stroke-width="0.8"/>
+            <ellipse cx="35" cy="24" rx="6" ry="5" stroke-width="0.8"/>
+            <path d="M4,23 L1,23 Q0,23 0,26 L0,30 Q0,32 2,32 L4,30"/>
+            <path d="M44,23 L47,23 Q48,23 48,26 L48,30 Q48,32 46,32 L44,30"/>
+            <circle cx="8" cy="17" r="1" fill="#111"/>
+            <circle cx="5" cy="21" r="1" fill="#111"/>
+            <circle cx="40" cy="17" r="1" fill="#111"/>
+            <circle cx="43" cy="21" r="1" fill="#111"/>
+            <path d="M4,30 Q14,36 22,34 Q26,34 26,34 Q34,36 44,30" stroke-width="0.8" stroke-dasharray="2,1.5"/>
+          </svg>
+        </div>
+        <div class="epp-chk on"></div>
+      </div>
+
+      <!-- MASCARILLA -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Mascarilla<br>Simple</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M6,16 Q24,10 42,16 L42,36 Q30,46 24,46 Q18,46 6,36 Z"/>
+            <path d="M12,14 Q24,11 36,14" stroke-width="2.8" stroke-linecap="round"/>
+            <path d="M6,23 Q24,19 42,23" stroke-width="0.9"/>
+            <path d="M6,30 Q24,26 42,30" stroke-width="0.9"/>
+            <path d="M6,19 Q1,24 1,32 Q1,38 6,38"/>
+            <path d="M42,19 Q47,24 47,32 Q47,38 42,38"/>
+            <line x1="24" y1="14" x2="24" y2="46" stroke-width="0.7" stroke-dasharray="2,2"/>
+          </svg>
+        </div>
+        <div class="epp-chk"></div>
+      </div>
+
+      <!-- RESPIRADOR -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Respirador</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M6,16 Q6,8 24,8 Q42,8 42,16 L42,32 Q42,40 24,42 Q6,40 6,32Z"/>
+            <path d="M6,16 Q6,13 10,11 Q17,9 24,9 Q31,9 38,11 Q42,13 42,16" stroke-width="0.8" stroke-dasharray="2,1.5"/>
+            <ellipse cx="10" cy="38" rx="7" ry="7"/>
+            <ellipse cx="10" cy="38" rx="4.5" ry="4.5" stroke-width="0.9"/>
+            <line x1="6" y1="36" x2="14" y2="36" stroke-width="0.7"/>
+            <line x1="6" y1="38" x2="14" y2="38" stroke-width="0.7"/>
+            <line x1="6" y1="40" x2="14" y2="40" stroke-width="0.7"/>
+            <ellipse cx="38" cy="38" rx="7" ry="7"/>
+            <ellipse cx="38" cy="38" rx="4.5" ry="4.5" stroke-width="0.9"/>
+            <line x1="34" y1="36" x2="42" y2="36" stroke-width="0.7"/>
+            <line x1="34" y1="38" x2="42" y2="38" stroke-width="0.7"/>
+            <line x1="34" y1="40" x2="42" y2="40" stroke-width="0.7"/>
+            <ellipse cx="24" cy="30" rx="5" ry="4"/>
+            <ellipse cx="24" cy="30" rx="2.5" ry="2" stroke-width="0.8"/>
+            <path d="M10,10 Q6,5 4,3"/>
+            <path d="M38,10 Q42,5 44,3"/>
+            <path d="M6,33 Q3,38 4,44"/>
+            <path d="M42,33 Q45,38 44,44"/>
+          </svg>
+        </div>
+        <div class="epp-chk on"></div>
+      </div>
+
+      <!-- TRAJE -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Traje</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M16,8 Q16,3 24,3 Q32,3 32,8 L33,12 Q33,16 24,17 Q15,16 15,12Z"/>
+            <path d="M15,12 Q11,13 9,17 L7,36 L15,38 L15,53 L33,53 L33,38 L41,36 L39,17 Q37,13 33,12"/>
+            <path d="M9,17 L4,34 Q3,37 7,38 L11,38 L15,22"/>
+            <path d="M39,17 L44,34 Q45,37 41,38 L37,38 L33,22"/>
+            <line x1="24" y1="17" x2="24" y2="38" stroke-dasharray="2,1.5" stroke-width="0.9"/>
+            <path d="M15,38 Q20,45 24,45 Q28,45 33,38"/>
+            <path d="M4,34 Q7,37 11,34" stroke-width="0.9"/>
+            <path d="M37,34 Q41,37 44,34" stroke-width="0.9"/>
+            <path d="M15,49 Q19,52 22,49" stroke-width="0.9"/>
+            <path d="M26,49 Q29,52 33,49" stroke-width="0.9"/>
+          </svg>
+        </div>
+        <div class="epp-chk on"></div>
+      </div>
+
+      <!-- DELANTAL -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Delantal<br>Protector</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M17,5 Q17,2 24,2 Q31,2 31,5"/>
+            <path d="M17,5 Q15,7 13,12"/>
+            <path d="M31,5 Q33,7 35,12"/>
+            <path d="M13,12 Q24,10 35,12"/>
+            <path d="M11,14 L10,50 Q10,54 24,54 Q38,54 38,50 L37,14 Q32,11 24,11 Q16,11 11,14Z"/>
+            <path d="M11,28 L5,26 Q3,26 3,28"/>
+            <path d="M37,28 L43,26 Q45,26 45,28"/>
+            <path d="M15,38 L15,52 L33,52 L33,38" stroke-width="0.9"/>
+            <line x1="11" y1="14" x2="37" y2="14" stroke-width="0.8"/>
+            <line x1="12" y1="22" x2="36" y2="22" stroke-width="0.6"/>
+          </svg>
+        </div>
+        <div class="epp-chk"></div>
+      </div>
+
+      <!-- PROTECTOR FACIAL -->
+      <div class="epp-item" onclick="toggleEPP(this)">
+        <div class="epp-lbl">Protector<br>Facial</div>
+        <div class="epp-box">
+          <svg viewBox="0 0 48 54" fill="none" stroke="#111" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M6,8 Q6,4 24,4 Q42,4 42,8 L42,15 Q42,18 24,18 Q6,18 6,15Z"/>
+            <path d="M8,15 Q24,17 40,15" stroke-width="0.8"/>
+            <circle cx="41" cy="11" r="3.5"/>
+            <line x1="39" y1="11" x2="43" y2="11" stroke-width="0.7"/>
+            <line x1="41" y1="9" x2="41" y2="13" stroke-width="0.7"/>
+            <line x1="14" y1="15" x2="12" y2="20"/>
+            <line x1="34" y1="15" x2="36" y2="20"/>
+            <path d="M12,20 Q24,23 36,20"/>
+            <path d="M10,20 L10,50 Q10,54 24,54 Q38,54 38,50 L38,20"/>
+            <path d="M10,30 Q24,33 38,30" stroke-width="0.8"/>
+            <path d="M10,42 Q24,45 38,42" stroke-width="0.8"/>
+            <path d="M12,52 Q24,56 36,52" stroke-width="0.9"/>
+          </svg>
+        </div>
+        <div class="epp-chk"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FIRMAS P2 -->
+  <div class="firmas" style="margin-top:20px">
+    <div class="f-zona">
+      <div class="f-img"><img id="firma-rt2" src="" alt="firma"></div>
+      <div class="f-linea">
+        <span class="f-nombre" data-f="rt-nombre">___________________________</span>
+        <span class="f-rol">Responsable Técnico</span>
+      </div>
+    </div>
+    <div class="f-zona">
+      <div class="f-img"></div>
+      <div class="f-linea">
+        <span class="f-nombre" data-f="emisor-nombre">___________________________</span>
+        <span class="f-rol">Emisor</span>
+      </div>
+    </div>
+    <div class="f-zona">
+      <div class="f-img"></div>
+      <div class="f-linea">
+        <span class="f-nombre">&nbsp;</span>
+        <span class="f-rol" data-f="recibe">Recibe</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /p2 -->
+
+<!-- ═════ JS ═════ -->
+<script>
+// ── Config ────────────────────────────────────────────────
+function toggleCfg(){ document.getElementById('cfgPanel').classList.toggle('on'); }
+
+function hsl(h,s,l){ return `hsl(${h},${s}%,${l}%)`; }
+function hexToHSL(hex){
+  let r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b); let h,s, l=(max+min)/2;
+  if(max===min){h=s=0;}else{
+    const d=max-min; s=l>.5?d/(2-max-min):d/(max+min);
+    switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;
+  }
+  return[Math.round(h*360),Math.round(s*100),Math.round(l*100)];
+}
+
+function applyColor(t,hex){
+  const[h,s,l]=hexToHSL(hex); const r=document.documentElement;
+  document.getElementById(t+'-hex').textContent=hex;
+  if(t==='cp'){
+    r.style.setProperty('--cp',   hsl(h,s,l));
+    r.style.setProperty('--cp-d', hsl(h,Math.min(s+8,100),Math.max(l-20,8)));
+    r.style.setProperty('--cp-m', hsl(h,Math.max(s-10,15),Math.min(l+18,78)));
+    r.style.setProperty('--cp-l', hsl(h,Math.max(s-22,6),Math.min(l+38,93)));
+    r.style.setProperty('--cp-ll',hsl(h,Math.max(s-30,3),Math.min(l+50,97)));
+    const sw=document.querySelectorAll('#cp-sw .sw');
+    [hsl(h,Math.min(s+8,100),Math.max(l-20,8)),hsl(h,s,l),hsl(h,Math.max(s-10,15),Math.min(l+18,78)),hsl(h,Math.max(s-22,6),Math.min(l+38,93)),hsl(h,Math.max(s-30,3),Math.min(l+50,97))]
+    .forEach((c,i)=>sw[i].style.background=c);
+  }else{
+    r.style.setProperty('--cn',   hsl(h,s,l));
+    r.style.setProperty('--cn-d', hsl(h,s,Math.max(l-22,8)));
+    r.style.setProperty('--cn-m', hsl(h,s,Math.min(l+18,75)));
+    r.style.setProperty('--cn-l', hsl(h,Math.max(s-5,0),Math.min(l+40,93)));
+    r.style.setProperty('--cn-ll',hsl(h,Math.max(s-8,0),Math.min(l+52,98)));
+    const sw=document.querySelectorAll('#cn-sw .sw');
+    [hsl(h,s,Math.max(l-22,8)),hsl(h,s,l),hsl(h,s,Math.min(l+18,75)),hsl(h,Math.max(s-5,0),Math.min(l+40,93)),hsl(h,Math.max(s-8,0),Math.min(l+52,98))]
+    .forEach((c,i)=>sw[i].style.background=c);
+  }
+}
+
+function sync(f,v){ document.querySelectorAll(`[data-f="${f}"]`).forEach(el=>el.textContent=v); }
+
+function syncFirma(role,v){
+  if(role==='rt'||role==='emisor'){
+    document.querySelectorAll(`[data-f="${role}-nombre"]`).forEach(el=>el.textContent=v||'___________________________');
+  }else if(role==='recibe'){
+    document.querySelectorAll('[data-f="recibe"]').forEach(el=>el.textContent=v||'Recibe');
+  }
+}
+
+// Logo
+function loadLogo(e){
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    const s=ev.target.result;
+    document.getElementById('logo-prev').innerHTML=`<img src="${s}" style="max-height:36px;max-width:120px">`;
+    const box=document.getElementById('logoBox');
+    const ph=box.querySelector('.logo-ph'); if(ph) ph.style.display='none';
+    const img=document.getElementById('logo-img'); img.src=s; img.style.display='block';
+  };
+  rd.readAsDataURL(f);
+}
+function clearLogo(){
+  document.getElementById('logo-prev').textContent='Sin logo';
+  document.getElementById('logo-img').style.display='none';
+  const ph=document.querySelector('.logo-ph'); if(ph) ph.style.display='';
+}
+
+// Firma RT
+function loadFirma(e){
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    const s=ev.target.result;
+    document.getElementById('firma-prev').innerHTML=`<img src="${s}" style="max-height:44px;max-width:150px">`;
+    ['firma-rt','firma-rt2'].forEach(id=>{ const img=document.getElementById(id); img.src=s; img.style.display='block'; });
+  };
+  rd.readAsDataURL(f);
+}
+function clearFirma(){
+  document.getElementById('firma-prev').textContent='Sin firma';
+  ['firma-rt','firma-rt2'].forEach(id=>{ const img=document.getElementById(id); img.src=''; img.style.display='none'; });
+}
+
+// Instrucciones preset
+function applyText(n){
+  const raw=document.getElementById(`txt-pre${n}`).value;
+  document.getElementById('instruc-b').innerHTML=raw.replace(/\n/g,'<br>');
+}
+
+// EPP toggle
+function toggleEPP(item){ item.querySelector('.epp-chk').classList.toggle('on'); }
+
+// Justificación (SI/NO exclusivos por fila)
+function markJustif(cell){
+  const row=cell.parentElement;
+  const [siCell,noCell]=[row.cells[1],row.cells[2]];
+  const was=cell.classList.contains('j-on');
+  siCell.classList.remove('j-on'); siCell.textContent='';
+  noCell.classList.remove('j-on'); noCell.textContent='';
+  if(!was){ cell.classList.add('j-on'); cell.textContent='✕'; }
+}
+
+// ── CSV Lineal (base de datos, compatible CSP) ────────────
+function exportCSV(){
+  const OA={
+    folio:'SP-042', por_programa:'SI', fecha_emision:'08-05-2026',
+    fecha_inicio:'10-05-2026', fecha_termino:'10-05-2026',
+    especie:'LIMON', variedad:'FINO 49', mojamiento:4500, estanque:2000,
+    mercado:'Exportacion China/UE', agronomo:'Ing. Agr.'
+  };
+
+  const C=[
+    {n:'15',ha:3.79},{n:'16',ha:4.31},{n:'18',ha:4.73},
+    {n:'19',ha:5.14},{n:'20',ha:5.14}
+  ];
+
+  const P=[
+    {nombre:'Defender Potasio', reg_sag:'-', ia:'Fosfito de potasio',
+     concentracion:'25% P/P', formulacion:'SL', aptitud:'Fertilizante',
+     objetivo:'Nutricion / Resistencia', tipo:'FERT', orden:1,
+     dosis_cc100L:300, um:'LT', carencia_etiq:0, carencia_asoex:'-',
+     carencia_txt:'Sin carencia', restriccion_max:0, uso_actual:0},
+    {nombre:'Ripper Max 75 SG', reg_sag:'1234', ia:'Abamectina 75 g/kg',
+     concentracion:'75 g/kg', formulacion:'SG', aptitud:'Acaricida - Insecticida',
+     objetivo:'Acaros / Mosquita blanca', tipo:'ACAR', orden:2,
+     dosis_cc100L:1000, um:'KG', carencia_etiq:14, carencia_asoex:30,
+     carencia_txt:'(Etiq.) 14 / (ASOEX) 30', restriccion_max:3, uso_actual:1},
+    {nombre:'Exirel 200 SC', reg_sag:'5678', ia:'Cyantraniliprole 200 g/L',
+     concentracion:'200 g/L', formulacion:'SC', aptitud:'Insecticida',
+     objetivo:'Trips / Lepidopteros', tipo:'INSC', orden:3,
+     dosis_cc100L:50, um:'LT', carencia_etiq:7, carencia_asoex:14,
+     carencia_txt:'(Etiq.) 7 / (ASOEX) 14', restriccion_max:2, uso_actual:1}
+  ];
+
+  const HDR=[
+    'folio_oa','por_programa','fecha_emision','fecha_inicio_aplicacion','fecha_termino_aplicacion',
+    'cuartel','superficie_cuartel_ha','especie','variedad',
+    'tipo_producto','orden_mezcla','objetivo_aplicacion',
+    'producto_nombre_comercial','reg_sag','ingrediente_activo','concentracion',
+    'formulacion','aptitud_clase',
+    'dosis_ordenada_cc100L','um_producto',
+    'mojamiento_lha','cap_estanque_l',
+    'volumen_teorico_L','producto_total_cc_g','producto_total_L_kg','dosis_ha',
+    'carencia_etiq_dias','carencia_asoex_dias','fecha_fin_carencia_etiq',
+    'restriccion_usos_max','uso_actual_en_temporada',
+    'mercado_destino','agronomo',
+    'temperatura_C','viento_kmh','condicion_cielo','aplicador','tractor','maquinaria','observaciones'
+  ].join(';');
+
+  let rows=['﻿'+HDR];
+
+  const fecha_base=new Date('2026-05-10');
+
+  C.forEach(c=>{
+    const vol_L=Math.round(c.ha*OA.mojamiento);
+    P.forEach(p=>{
+      const prod_raw=vol_L*p.dosis_cc100L/100;
+      const prod_ccg=Math.round(prod_raw);
+      const prod_Lkg=(prod_ccg/1000).toFixed(2);
+      const dosis_ha_raw=p.dosis_cc100L*OA.mojamiento/100;
+      const dosis_ha=p.um==='KG'
+        ?(dosis_ha_raw/1000).toFixed(3)
+        :dosis_ha_raw.toFixed(2);
+      const dias_car=typeof p.carencia_etiq==='number'?p.carencia_etiq:0;
+      let ffc='-';
+      if(dias_car>0){
+        const d=new Date(fecha_base); d.setDate(d.getDate()+dias_car);
+        ffc=d.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'});
+      }
+      const restriccion_txt=p.restriccion_max>0
+        ?`${p.uso_actual} de ${p.restriccion_max}`
+        :'-';
+
+      rows.push([
+        OA.folio, OA.por_programa, OA.fecha_emision, OA.fecha_inicio, OA.fecha_termino,
+        c.n, c.ha, OA.especie, OA.variedad,
+        p.tipo, p.orden, p.objetivo,
+        p.nombre, p.reg_sag, p.ia, p.concentracion,
+        p.formulacion, p.aptitud,
+        p.dosis_cc100L, p.um,
+        OA.mojamiento, OA.estanque,
+        vol_L, prod_ccg, prod_Lkg, dosis_ha,
+        p.carencia_etiq, p.carencia_asoex, ffc,
+        p.restriccion_max>0?p.restriccion_max:'-',
+        p.uso_actual>0?p.uso_actual:'-',
+        OA.mercado, OA.agronomo,
+        '','','','','','',''
+      ].join(';'));
+    });
+  });
+
+  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=Object.assign(document.createElement('a'),{href:url,download:'OA_SP042_CSP_20260510.csv'});
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
