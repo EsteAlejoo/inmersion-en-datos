@@ -160,7 +160,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
 .tox-iii{border-bottom:4px solid #3182ce!important}
 .tox-u{border-bottom:4px solid #38a169!important}
 .tox-na{border-bottom:4px solid #888!important}
-.tox-legend{font-size:5.8pt;color:var(--cn-m);margin-top:5px;display:flex;flex-wrap:wrap;gap:3px 8px;align-items:center}
+.tox-legend{font-size:5.8pt;color:var(--cn-m);margin-top:6px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px 6px;justify-items:center;text-align:center}
 .tl-tag{padding:1px 7px 2px;border-bottom:3px solid transparent;font-weight:bold;font-size:5.8pt;background:white;border:1px solid #ddd;border-radius:2px}
 .tl-tag.tox-ia{border-bottom:3px solid #7b0000;color:#7b0000}
 .tl-tag.tox-ib{border-bottom:3px solid #e53e3e;color:#c53030}
@@ -304,10 +304,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
 
   <!-- BLOQUE AGRÍCOLA -->
   <div class="bloque">
-    <div class="b-tit" style="background:var(--cg1-d)">
-      <span>Datos de la Agrícola</span>
-      <span class="b-fecha">Fecha Inicio Aplicación: &nbsp;<strong>10-05-2026</strong></span>
-    </div>
+    <div class="b-tit" style="background:var(--cg1-d)">Datos de la Agrícola</div>
     <div class="b-body">
       <div class="g4" style="margin-bottom:5px">
         <div class="campo"><span class="cl">Razón Social</span><span class="cv" data-f="razon">San Pedro SpA</span></div>
@@ -327,17 +324,19 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
     <div class="bloque" style="margin-bottom:0">
       <div class="b-tit" style="background:var(--cg2-d)">Datos de Aplicación</div>
       <div class="b-body">
-        <div class="g2" style="margin-bottom:5px">
+        <div class="g3" style="margin-bottom:5px">
+          <div class="campo"><span class="cl">Fecha Inicio</span><span class="cv">10-05-2026</span></div>
           <div class="campo"><span class="cl">Especie</span><span class="cv">Limón</span></div>
           <div class="campo"><span class="cl">Variedad</span><span class="cv">Fino 49</span></div>
         </div>
-        <div class="campo" style="margin-bottom:4px">
+        <div class="campo" style="margin-bottom:2px">
           <span class="cl">Cuarteles</span>
-          <div class="chips">
-            <span class="chip">15 · 3,79 ha</span><span class="chip">16 · 4,31 ha</span>
-            <span class="chip">18 · 4,73 ha</span><span class="chip">19 · 5,14 ha</span>
-            <span class="chip">20 · 5,14 ha</span>
-          </div>
+          <span class="cv" id="cv-cuart-res">15–16, 18–20 <span style="color:var(--cn-m);font-weight:normal;font-size:7pt">(5 cuarteles)</span></span>
+        </div>
+        <div class="chips" style="margin-bottom:4px">
+          <span class="chip">15 · 3,79 ha</span><span class="chip">16 · 4,31 ha</span>
+          <span class="chip">18 · 4,73 ha</span><span class="chip">19 · 5,14 ha</span>
+          <span class="chip">20 · 5,14 ha</span>
         </div>
         <div class="sup-box">Superficie total: <strong>23,11 ha</strong></div>
       </div>
@@ -504,7 +503,7 @@ td{font-size:7.5pt;padding:3px 4px;border:1px solid #ccc;text-align:center;verti
   <p class="nota">* Fecha posible Cosecha = día aplicación (día 0) + días carencia + 1. Ripper Max ASOEX 30 días → 10-05 (día 0) + 30 + 1 = <strong>11-06-2026</strong>.</p>
 
   <div class="tox-legend">
-    <strong style="font-size:5.8pt;color:var(--cn-d)">Clasificación toxicológica OMS:</strong>
+    <strong style="font-size:5.8pt;color:var(--cn-d);grid-column:1/-1;justify-self:center">Clasificación toxicológica OMS:</strong>
     <span class="tl-tag tox-ia">Ia — Extremadamente peligroso</span>
     <span class="tl-tag tox-ib">Ib — Muy peligroso</span>
     <span class="tl-tag tox-ii">II — Moderadamente peligroso</span>
@@ -778,6 +777,19 @@ function toggleEPP(item){ item.querySelector('.epp-chk').classList.toggle('on');
 
 // Justificación chips
 function toggleJchip(chip){ chip.classList.toggle('on'); }
+
+// ── Cuarteles grouping ─────────────────────────────────
+function groupNums(nums){
+  const n=[...nums].map(Number).sort((a,b)=>a-b);
+  if(!n.length) return '—';
+  const g=[]; let s=n[0],e=n[0];
+  for(let i=1;i<n.length;i++){
+    if(n[i]===e+1){e=n[i];}
+    else{g.push(e===s?`${s}`:e===s+1?`${s}, ${e}`:`${s}–${e}`);s=e=n[i];}
+  }
+  g.push(e===s?`${s}`:e===s+1?`${s}, ${e}`:`${s}–${e}`);
+  return g.join(', ');
+}
 
 // ── CSV ─────────────────────────────────────────────────
 function exportCSV(){

@@ -239,110 +239,25 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ 1. EJEMPLO REAL -->
-<div style="background:#333; color:white; text-align:center; padding:12px; font-size:11pt; font-weight:bold; max-width:900px; margin:32px auto 0; border-radius:8px 8px 0 0;">
-  1. MODELO DE DOCUMENTO — Orden de Aplicación (ejemplo SP-042)
-</div>
-
-<div class="oa-doc">
-  <div class="oa-titulo">ORDEN DE APLICACIÓN DE AGROCOMPLEMENTOS</div>
-
-  <div class="cabecera">
-    <div>
-      <div class="campo"><label>Especie:</label><span class="val">Limón</span></div>
-      <div class="campo"><label>Estado Fenológico:</label><span class="val">Frutos 40-60 mm</span></div>
-      <div class="campo"><label>Fecha Emisión:</label><span class="val">08-05-2026</span></div>
-      <div class="campo"><label>Fecha desde:</label><span class="val">09-05-2026</span></div>
-      <div class="campo"><label>Fecha inicio aplicación:</label><span class="val">10-05-2026</span></div>
+<!-- ═══════════════════════════════════════════════════════ 1. DOCUMENTO DE SALIDA -->
+<div class="seccion" style="max-width:900px;margin:32px auto 0">
+  <div class="seccion-titulo">1. Documento de salida — Plantilla HTML vigente <span>Archivo: erp_oa/oa_plantilla_v5.html</span></div>
+  <div class="seccion-cuerpo">
+    <div class="regla" style="border-color:#1a4d2e">
+      <h4>Fuente única de verdad del formato OA</h4>
+      <p>El documento de salida real y vigente es <strong><code>erp_oa/oa_plantilla_v5.html</code></strong>. Esta especificación documenta campos, reglas de negocio y estructura de datos. Cualquier cambio de formato/layout se aplica únicamente en el HTML; esta especificación describe el <em>qué</em>, el HTML el <em>cómo</em>.</p>
     </div>
-    <div>
-      <div class="campo"><label>Código:</label><span class="val">R03/P02</span></div>
-      <div class="campo"><label>Productor:</label><span class="val">San Pedro SpA</span></div>
-      <div class="campo"><label>Predio:</label><span class="val">Campo San Pablo</span></div>
-      <div class="campo"><label>Localidad:</label><span class="val">El Romero, La Serena</span></div>
-      <div class="campo"><label>N° Orden:</label><span class="val"><strong>SP-042</strong></span></div>
-      <div class="campo"><label>Tipo:</label><span class="val">Proactiva</span></div>
-    </div>
-  </div>
-
-  <div class="alerta-ph">* Importante regular pH al agua de aplicación &gt;7.0 — pH ideal 5.5–6.5</div>
-
-  <table>
-    <thead>
-      <tr>
-        <th style="width:18%;text-align:left">Nombre comercial</th>
-        <th style="width:16%">Ingrediente activo</th>
-        <th style="width:12%">Objetivo</th>
-        <th style="width:10%">Dosis/100 L</th>
-        <th style="width:10%">Dosis/Ha</th>
-        <th style="width:11%">Nec. maquinada</th>
-        <th style="width:11%">Nec. Total</th>
-        <th style="width:6%">Carencia Etiq.</th>
-        <th style="width:6%">Carencia ASOEX</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="nombre">Defender Potasio</td>
-        <td>Fosfito de potasio</td>
-        <td>Nutrición / Resistencia</td>
-        <td class="dosis">300 cc/100L</td>
-        <td>13.5 L</td>
-        <td>6 L</td>
-        <td>67.5 L</td>
-        <td>0</td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td class="nombre">Jabon Potasico Popeye</td>
-        <td>Ácidos grasos de potasio</td>
-        <td>Control mosquita blanca</td>
-        <td class="dosis">500 cc/100L</td>
-        <td>22.5 L</td>
-        <td>10 L</td>
-        <td>112.5 L</td>
-        <td>0</td>
-        <td>—</td>
-      </tr>
-      <tr>
-        <td class="nombre">Ripper Max 75 SG</td>
-        <td>Abamectina 75 g/kg</td>
-        <td>Control ácaros y mosquita</td>
-        <td class="dosis">1000 g/100L</td>
-        <td>45 kg</td>
-        <td>20 kg</td>
-        <td>225 kg</td>
-        <td>14</td>
-        <td>30</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="cuarteles-box">
-    <strong>Sectores / Cuarteles (5 cuarteles · 14.80 ha):</strong>
-    <div class="cuarteles-chips">
-      <span>15 (3.79 ha)</span><span>16 (4.31 ha)</span><span>18 (4.73 ha)</span><span>19 (5.14 ha)</span><span>20 (5.14 ha)</span>
-    </div>
-  </div>
-
-  <div class="considerar">
-    <strong>Considerar:</strong>
-    <div class="fila"><label>Mojamiento / ha:</label><span class="val">4 500 L/ha &nbsp;*Según TRV</span></div>
-    <div class="fila"><label>Capacidad estanque:</label><span class="val">2 000 L</span></div>
-    <div class="fila"><label>Forma de aplicación:</label><span class="val">PULVERIZADORA</span></div>
-    <div class="fila"><label>Tiempo de reingreso:</label><span class="val">24 HORAS (política interna) &nbsp;&nbsp;<strong>48 hrs. Mujeres embarazadas/lactancia</strong></span></div>
-    <div class="fila"><label>Mercado destino:</label><span class="val">EXPORTACIÓN — China / UE</span></div>
-  </div>
-
-  <p class="nota-legal">
-    * SE PROHÍBE la aplicación de productos químicos en áreas de conservación, cursos de agua, pasos de fauna u otras áreas de interés ecológico.<br>
-    * Verificar velocidad y presión de trabajo en la tabla de calibraciones — USE SIEMPRE SU EQUIPO DE PROTECCIÓN Y LEA LA ETIQUETA.
-  </p>
-
-  <div class="firmas">
-    <div><div class="firma-linea">Responsable técnico<br><strong>Ing. Agr. [Nombre]</strong></div></div>
-    <div><div class="firma-linea">Emisor</div></div>
-    <div><div class="firma-linea">Recibe</div></div>
+    <table class="tabla-spec">
+      <thead><tr><th style="width:22%">Elemento</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td class="campo-nombre">Páginas</td><td>2 páginas carta: <strong>Hoja 1</strong> — Cabecera, datos, productos, instrucciones, firmas. <strong>Hoja 2</strong> — Desglose por cuartel, EPP.</td></tr>
+        <tr><td class="campo-nombre">Bloques de color</td><td>3 grupos jerárquicos con color configurable: <strong>cg1</strong> (Empresa/Administrativo), <strong>cg2</strong> (Operación/Técnico), <strong>cg3</strong> (Control/Seguridad).</td></tr>
+        <tr><td class="campo-nombre">Fecha Inicio</td><td>Aparece en el bloque <strong>Datos de Aplicación</strong> junto con Especie y Variedad (fila g3). No va en el encabezado del bloque Agrícola.</td></tr>
+        <tr><td class="campo-nombre">Cuarteles</td><td>Se muestran en dos niveles: (1) resumen agrupado con rangos contiguos (ej: "15–16, 18–20 (5 cuarteles)") y (2) chips detalle con superficie (ha). Ver R009.</td></tr>
+        <tr><td class="campo-nombre">Clasificación OMS</td><td>Leyenda centrada en 3 columnas bajo la tabla de desglose (hoja 2). Cada producto lleva clase CSS <code>tox-[cat]</code> en el encabezado de columna.</td></tr>
+        <tr><td class="campo-nombre">Exportación Excel</td><td>Plantilla equivalente disponible en <strong><code>erp_oa/OA_plantilla_v5.xlsx</code></strong>. Incluye fórmulas de cálculo desde dosis/100L y hoja de desglose por cuartel.</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -644,6 +559,11 @@
     <div class="regla">
       <h4>R008 — Estado "confirmada" es irreversible</h4>
       <p>Una OA confirmada no se puede editar. Solo se puede anular. Una OA anulada no puede reactivarse. Toda modificación a una OA confirmada requiere crear una nueva OA.</p>
+    </div>
+
+    <div class="regla">
+      <h4>R009 — Agrupación de cuarteles contiguos</h4>
+      <p>Cuando una OA incluye cuarteles con números correlativos, mostrar rangos agrupados en lugar de listar individualmente. Regla: si <code>cuartel[i+1] = cuartel[i] + 1</code>, formar rango <code>inicio–fin</code>. Casos especiales: si todos los cuarteles del predio → "Todos los cuarteles". El detalle con ha por cuartel siempre se muestra como chips secundarios. Ej: cuarteles 15, 16, 18, 19, 20 → <strong>"15–16, 18–20 (5 cuarteles)"</strong>. Implementado en función JS <code>groupNums(nums)</code> en el HTML de plantilla.</p>
     </div>
   </div>
 </div>
