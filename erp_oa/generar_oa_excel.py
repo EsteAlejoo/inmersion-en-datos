@@ -141,10 +141,10 @@ label_value(ws1, 9, 4, 5, "Especie", "Limón")
 label_value(ws1, 9, 7, 8, "Variedad", "Fino 49", span_end=9)
 label_value(ws1, 9, 10, 11, "E. Fenológico", "Frutos 40-60 mm")
 
-label_value(ws1, 10, 1, 2, "Cuarteles", "15–16, 18–20  (5 cuarteles)", span_end=5)
+label_value(ws1, 10, 1, 2, "Cuarteles", "15, 16, 18, 19, 20  (5 cuarteles)", span_end=5)
 label_value(ws1, 10, 6, 7, "Sup. Total (ha)", 23.11, bg_val=C_CALC, bold_val=True)
 label_value(ws1, 10, 8, 9, "Mojamiento (L/ha)", 4500, bg_val=C_INPUT, bold_val=True)
-ws1["J10"].number_format = "#,##0"
+ws1["I10"].number_format = "#,##0"
 label_value(ws1, 10, 10, 11, "Cap. Estanque (L)", 2000, bg_val=C_INPUT, bold_val=True)
 
 label_value(ws1, 11, 1, 2, "Mercado Destino", "Exportación — China/UE", span_end=4)
@@ -159,7 +159,7 @@ ws1["G10"].comment = None  # total ha
 # TABLA PRODUCTOS (fila 13 header, 14-23 datos, 24 total)
 # ────────────────────────────────────────────────────────────────
 # Referencias a valores clave en la hoja
-REF_MOJ  = "J10"   # Mojamiento L/ha
+REF_MOJ  = "I10"   # Mojamiento L/ha (col I = val_col de label_value row 10)
 REF_EST  = "K10"   # Cap. Estanque L
 REF_HA   = "G10"   # Superficie total ha
 N_PROD   = 10      # Filas de producto
@@ -336,7 +336,7 @@ ws2.merge_cells("E2:G2")
 ws2["E2"] = "Mojamiento (L/ha):"
 ws2["E2"].font = Font(bold=True, size=8, name="Arial", color="555555")
 ws2["E2"].alignment = Alignment(horizontal="right", vertical="center")
-ws2["H2"] = "=OA!J10"
+ws2["H2"] = "=OA!I10"
 ws2["H2"].number_format = "#,##0"
 ws2["H2"].font = Font(bold=True, size=9, name="Arial")
 ws2["I2"] = "Cap. estanque (L):"
@@ -400,9 +400,9 @@ for i, (cname, ha_val) in enumerate(cuarteles):
     ha_c.alignment = align("center")
     ha_c.number_format = "#,##0.00"
 
-    # Vol. solución = C{row} * OA.J10
+    # Vol. solución = ha_cuartel * mojamiento_Lha
     vol_col = get_column_letter(3)
-    vc = ws2.cell(row=row, column=4, value=f"={vol_col}{row}*OA!$J$10")
+    vc = ws2.cell(row=row, column=4, value=f"={vol_col}{row}*OA!$I$10")
     vc.font = Font(size=8, name="Arial", color="1A3080")
     vc.fill = fill(C_CALC)
     vc.border = border_all()
