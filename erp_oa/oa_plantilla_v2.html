@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orden de Aplicación — San Pedro SpA</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   HOJA CARTA CON MÁRGENES ESTÁNDAR
+   ═══════════════════════════════════════════════════════════════ */
+@page {
+  size: letter portrait;
+  margin: 14mm 15mm 12mm 15mm;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 9pt;
+  background: #d8d8d8;
+  color: #111;
+}
+
+/* ── Páginas ──────────────────────────────────────────────── */
+.page {
+  width: 215.9mm;
+  min-height: 279.4mm;
+  background: white;
+  margin: 20px auto;
+  padding: 12mm 14mm 10mm 14mm;
+  box-shadow: 0 4px 18px rgba(0,0,0,.28);
+}
+
+@media print {
+  body { background: white; }
+  .page { margin: 0; box-shadow: none; width: 100%; padding: 0; }
+  .no-print { display: none !important; }
+  [contenteditable] { outline: none; }
+  .page-2 { page-break-before: always; }
+}
+
+/* ── Barra de herramientas ────────────────────────────────── */
+.toolbar {
+  background: #1a4d2e;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.toolbar h2 { font-size: 10.5pt; flex: 1; font-weight: bold; }
+.btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 8.5pt;
+  font-weight: bold;
+  color: white;
+  transition: opacity .2s;
+}
+.btn:hover { opacity: .82; }
+.btn-print  { background: #2d6a4f; }
+.btn-csv    { background: #1558a7; }
+.btn-email  { background: #6a1fa0; }
+
+/* ══════════════════════════════════════════════════════════════
+   PÁGINA 1 — ORDEN DE APLICACIÓN
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Encabezado ───────────────────────────────────────────── */
+.oa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2.5px solid #111;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+.oa-empresa .doc-titulo {
+  font-size: 11.5pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.oa-empresa .doc-sub {
+  font-size: 7.5pt;
+  color: #555;
+  margin-top: 2px;
+}
+.oa-folio {
+  text-align: right;
+  line-height: 1.4;
+}
+.oa-folio .folio-label { font-size: 6.5pt; color: #777; text-transform: uppercase; font-weight: bold; }
+.oa-folio .folio-num   { font-size: 16pt; font-weight: bold; color: #1a4d2e; line-height: 1.1; }
+.oa-folio .emision-label { font-size: 6.5pt; color: #777; text-transform: uppercase; margin-top: 2px; }
+.oa-folio .emision-val { font-size: 10pt; font-weight: bold; }
+
+/* ── Info chips ───────────────────────────────────────────── */
+.info-row {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+.i-chip {
+  border: 1px solid #bbb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.i-chip .lbl {
+  background: #404040;
+  color: white;
+  font-size: 6pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  letter-spacing: .3px;
+}
+.i-chip .val {
+  font-size: 9pt;
+  font-weight: bold;
+  padding: 3px 5px;
+}
+
+/* ── Alerta pH ────────────────────────────────────────────── */
+.alerta-ph {
+  background: #ffff00;
+  font-size: 7.5pt;
+  font-weight: bold;
+  padding: 2px 7px;
+  margin: 5px 0;
+  border: 1px solid #bbb;
+}
+
+/* ── Títulos de sección ───────────────────────────────────── */
+.sec-lbl {
+  font-size: 7.5pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  padding: 2px 7px;
+  letter-spacing: .5px;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sec-lbl.verde  { background: #2d6a4f; }
+.sec-lbl.oscuro { background: #333; }
+.sec-lbl.azul   { background: #1558a7; }
+
+/* ── Tablas ───────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+
+th {
+  font-size: 6.8pt;
+  font-weight: bold;
+  padding: 3px 3px;
+  text-align: center;
+  border: 1px solid #555;
+  line-height: 1.25;
+}
+td {
+  font-size: 8pt;
+  padding: 3px 4px;
+  border: 1px solid #ccc;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Tabla cuarteles */
+.t-cuar th { background: #2d6a4f; color: white; }
+.t-cuar td { background: #e8f5e9; }
+.t-cuar td.cn { text-align: left; font-weight: bold; background: #c8e6c9; }
+.limon   { color: #1b5e20; font-weight: bold; font-size: 7.5pt; }
+.naranja { color: #bf360c; font-weight: bold; font-size: 7.5pt; }
+
+/* Caja superficie total */
+.sup-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #2d6a4f;
+  padding: 3px 12px;
+  font-size: 9pt;
+  font-weight: bold;
+  color: #2d6a4f;
+  margin: 3px 0 6px 0;
+}
+.sup-total span { font-size: 11pt; }
+
+/* Tabla productos */
+.t-prod th { background: #333; color: white; }
+.t-prod td { background: #fffde7; }
+.t-prod td.pn { text-align: left; font-weight: bold; background: #fff9c4; }
+.t-prod td.ic { font-size: 6.8pt; color: #b71c1c; font-style: italic; text-align: left; background: #fff3e0; }
+
+/* ── Nota legal ───────────────────────────────────────────── */
+.nota-legal {
+  font-size: 7pt;
+  color: #444;
+  margin-bottom: 5px;
+  line-height: 1.5;
+  padding: 3px 0;
+  border-top: 1px solid #ccc;
+}
+
+/* ── Instrucciones editables ──────────────────────────────── */
+.bloque-edit {
+  border: 1px solid #bbb;
+  margin-bottom: 5px;
+}
+.bloque-edit .be-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 7px;
+  font-size: 6.5pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  background: #555;
+}
+.be-header .hint { font-weight: normal; font-style: italic; opacity: .7; font-size: 6pt; }
+.bloque-edit .be-body {
+  padding: 5px 8px;
+  font-size: 7.5pt;
+  line-height: 1.65;
+  outline: none;
+  min-height: 32px;
+}
+.bloque-edit .be-body:focus { background: #fffde7; }
+
+/* ── Notificaciones ───────────────────────────────────────── */
+.notif-bloque {
+  border: 1px solid #1558a7;
+  margin-bottom: 5px;
+  font-size: 7.5pt;
+}
+.notif-bloque .nb-header {
+  background: #1558a7;
+  color: white;
+  font-size: 6.5pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.nb-header .hint { font-weight: normal; font-style: italic; opacity: .7; font-size: 6pt; }
+.notif-bloque .nb-body { padding: 6px 8px; }
+
+.email-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 5px; }
+.email-tag {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 7pt;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.email-tag .rm { cursor: pointer; color: #aaa; margin-left: 2px; line-height: 1; font-size: 9pt; }
+.email-tag .rm:hover { color: red; }
+.inp-email {
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 7pt;
+  width: 170px;
+}
+.btn-add-em {
+  background: #1558a7;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 2px 9px;
+  font-size: 7pt;
+  cursor: pointer;
+}
+.notif-msg {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  font-size: 7pt;
+  line-height: 1.55;
+  outline: none;
+  width: 100%;
+  min-height: 36px;
+  display: block;
+}
+.notif-msg:focus { background: #fffde7; border-color: #1558a7; }
+
+/* ── Firmas ───────────────────────────────────────────────── */
+.firmas {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  margin-top: 12px;
+  font-size: 8pt;
+  text-align: center;
+}
+.firma-linea { border-top: 1px solid #000; padding-top: 3px; margin-top: 26px; }
+
+/* ══════════════════════════════════════════════════════════════
+   PÁGINA 2 — DESGLOSE POR CUARTEL
+   ══════════════════════════════════════════════════════════════ */
+.p2-titulo {
+  text-align: center;
+  font-size: 11pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-bottom: 2.5px solid #111;
+  padding-bottom: 5px;
+  margin-bottom: 4px;
+}
+.p2-sub {
+  text-align: center;
+  font-size: 7.5pt;
+  color: #555;
+  margin-bottom: 8px;
+}
+.t-desglose th { background: #37474f; color: white; font-size: 6.5pt; padding: 4px 3px; }
+.t-desglose td { background: #ecf0f1; font-size: 7.5pt; }
+.t-desglose td.dn { background: #d5e8d4; font-weight: bold; text-align: left; }
+.t-desglose tr.fila-tot td {
+  background: #f5f5f5;
+  font-weight: bold;
+  border-top: 2px solid #333;
+}
+.maq-tot-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #333;
+  padding: 3px 12px;
+  font-size: 9pt;
+  font-weight: bold;
+  margin-top: 6px;
+}
+.nota-maq {
+  font-size: 7pt;
+  color: #555;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ── Regla R010 export ────────────────────────────────────── */
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ TOOLBAR (solo pantalla) ════════════ -->
+<div class="toolbar no-print">
+  <h2>ERP OA · San Pedro SpA — Folio SP-042</h2>
+  <button class="btn btn-csv"   onclick="exportarCSV()">⬇ Exportar CSV (Registro)</button>
+  <button class="btn btn-email" onclick="enviarNotificacion()">✉ Enviar Notificación</button>
+  <button class="btn btn-print" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+</div>
+
+<!-- ════════════════════ PÁGINA 1 ════════════════════════════ -->
+<div class="page" id="pagina1">
+
+  <!-- ENCABEZADO -->
+  <div class="oa-header">
+    <div class="oa-empresa">
+      <div class="doc-titulo">Orden de Aplicación de Agrocomplementos</div>
+      <div class="doc-sub">San Pedro SpA · Campo San Pablo · El Romero, La Serena · Código R03/P02</div>
+    </div>
+    <div class="oa-folio">
+      <div class="folio-label">Folio</div>
+      <div class="folio-num">SP-042</div>
+      <div class="emision-label">Fecha de Emisión</div>
+      <div class="emision-val">08-05-2026</div>
+    </div>
+  </div>
+
+  <!-- FILA 1: predio + fecha inicio + mojamiento + estanque -->
+  <div class="info-row cols-4" style="margin-bottom:4px">
+    <div class="i-chip">
+      <div class="lbl">Productor / Predio</div>
+      <div class="val">San Pedro SpA · Campo San Pablo</div>
+    </div>
+    <div class="i-chip">
+      <div class="lbl">Fecha Inicio Aplicación</div>
+      <div class="val">10-05-2026</div>
+    </div>
+    <div class="i-chip">
+      <div class="lbl">Mojamiento (L/ha)</div>
+      <div class="val">4.500</div>
+    </div>
+    <div class="i-chip">
+      <div class="lbl">Capacidad Estanque (L)</div>
+      <div class="val">2.000</div>
+    </div>
+  </div>
+
+  <!-- FILA 2: aplicación + mercado + reingreso -->
+  <div class="info-row cols-3" style="margin-bottom:5px">
+    <div class="i-chip">
+      <div class="lbl">Forma de Aplicación</div>
+      <div class="val">Pulverizadora</div>
+    </div>
+    <div class="i-chip">
+      <div class="lbl">Mercado Destino</div>
+      <div class="val">Exportación — China / UE</div>
+    </div>
+    <div class="i-chip">
+      <div class="lbl">Tiempo de Reingreso</div>
+      <div class="val">24 h · Embarazadas/lactancia: 48 h</div>
+    </div>
+  </div>
+
+  <div class="alerta-ph">★ Regular pH del agua: si pH &gt; 7.0, corregir hasta rango 5.5–6.5 antes de agregar productos.</div>
+
+  <!-- ────── CUARTELES ────── -->
+  <div class="sec-lbl verde">Sectores / Cuarteles</div>
+  <table class="t-cuar">
+    <thead>
+      <tr>
+        <th style="width:10%;text-align:left">Cuartel</th>
+        <th style="width:13%">Especie</th>
+        <th style="width:14%">Variedad</th>
+        <th style="width:10%">Superficie<br>(ha)</th>
+        <th style="width:14%">Volumen<br>solución (L)</th>
+        <th style="width:11%">Maquinadas<br>completas</th>
+        <th style="width:11%">Litros<br>adicionales</th>
+        <th style="width:17%">Observación</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cn">15</td>
+        <td class="limon">Limón</td>
+        <td>Fino 49</td>
+        <td>3,79</td>
+        <td>17.055</td>
+        <td>8</td>
+        <td>1.055</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="cn">16</td>
+        <td class="limon">Limón</td>
+        <td>Fino 49</td>
+        <td>4,31</td>
+        <td>19.395</td>
+        <td>9</td>
+        <td>1.395</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="cn">18</td>
+        <td class="limon">Limón</td>
+        <td>Fino 49</td>
+        <td>4,73</td>
+        <td>21.285</td>
+        <td>10</td>
+        <td>1.285</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="cn">19</td>
+        <td class="limon">Limón</td>
+        <td>Fino 49</td>
+        <td>5,14</td>
+        <td>23.130</td>
+        <td>11</td>
+        <td>1.130</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="cn">20</td>
+        <td class="limon">Limón</td>
+        <td>Fino 49</td>
+        <td>5,14</td>
+        <td>23.130</td>
+        <td>11</td>
+        <td>1.130</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="sup-total">Superficie total a aplicar: <span>23,11 ha</span></div>
+
+  <!-- ────── PRODUCTOS ────── -->
+  <div class="sec-lbl oscuro">Productos y cantidades necesarias</div>
+  <table class="t-prod">
+    <thead>
+      <tr>
+        <th style="width:15%;text-align:left">Nombre comercial</th>
+        <th style="width:13%">Ingrediente activo</th>
+        <th style="width:9%">Objetivo</th>
+        <th style="width:8%">Dosis / 100 L<br><small style="font-weight:normal">(cc ó g)</small></th>
+        <th style="width:8%">Dosis / Ha<br><small style="font-weight:normal">(L ó kg)</small></th>
+        <th style="width:9%">Nec. Maquinada<br><small style="font-weight:normal">(cc ó g)</small></th>
+        <th style="width:9%">Nec. Total<br><small style="font-weight:normal">(L ó kg)</small></th>
+        <th style="width:6%">Carencia<br>Etiq.<br><small style="font-weight:normal">(días)</small></th>
+        <th style="width:6%">Carencia<br>ASOEX<br><small style="font-weight:normal">(días)</small></th>
+        <th style="width:6%">Usos/<br>temporada</th>
+        <th style="width:11%">Incompatibilidades</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pn">Defender Potasio</td>
+        <td>Fosfito de potasio</td>
+        <td>Nutrición / Resistencia</td>
+        <td>300</td>
+        <td>13,5</td>
+        <td>6.000</td>
+        <td>312</td>
+        <td>0</td>
+        <td>—</td>
+        <td>—</td>
+        <td class="ic">—</td>
+      </tr>
+      <tr>
+        <td class="pn">Ripper Max 75 SG</td>
+        <td>Abamectina 75 g/kg</td>
+        <td>Ácaros / Mosquita</td>
+        <td>1.000</td>
+        <td>45</td>
+        <td>20.000</td>
+        <td>1.040</td>
+        <td>14</td>
+        <td>30</td>
+        <td>3</td>
+        <td class="ic">—</td>
+      </tr>
+      <tr>
+        <td class="pn">Exirel 200 SC</td>
+        <td>Cyantraniliprole 200 g/L</td>
+        <td>Trips / Lepidópteros</td>
+        <td>50</td>
+        <td>2,25</td>
+        <td>1.000</td>
+        <td>52</td>
+        <td>7</td>
+        <td>14</td>
+        <td>2</td>
+        <td class="ic">No mezclar con EC/OD ni aceites (Winspray)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ────── INSTRUCCIONES SEGURIDAD (editables) ────── -->
+  <div class="bloque-edit">
+    <div class="be-header">
+      Instrucciones de seguridad y condiciones de aplicación
+      <span class="hint no-print">✏ Haz clic en el texto para editar</span>
+    </div>
+    <div class="be-body" contenteditable="true" id="txtInstrucciones">
+      • Use siempre EPP completo: traje de alto volumen, respirador con filtros para vapores orgánicos, guantes de nitrilo, botas de goma y gafas. Guárdelo lavado en el lugar asignado.<br>
+      • No aplicar con temperatura &gt; 25 °C ni viento &gt; 3 km/h.<br>
+      • Verifique que SAG y apicultores estén notificados antes de aplicar. Asegúrese de que no haya presencia de terceros durante la aplicación.<br>
+      • Se prohíbe aplicar en zonas de conservación, cursos de agua o pasos de fauna.
+    </div>
+  </div>
+
+  <!-- ────── NOTIFICACIONES (preparado para futuro) ────── -->
+  <div class="notif-bloque no-print">
+    <div class="nb-header">
+      Notificación de aplicación — SAG / Apicultores
+      <span class="hint">Preparado para envío automático por correo</span>
+    </div>
+    <div class="nb-body">
+      <div style="font-size:7pt;color:#555;margin-bottom:5px">Destinatarios:</div>
+      <div class="email-row" id="emailList">
+        <div class="email-tag" data-email="sag@sag.gob.cl">
+          SAG La Serena &lt;sag@sag.gob.cl&gt;
+          <span class="rm" onclick="eliminarEmail(this)">×</span>
+        </div>
+        <div class="email-tag" data-email="apicultores@ejemplo.cl">
+          Apicultores Valle &lt;apicultores@ejemplo.cl&gt;
+          <span class="rm" onclick="eliminarEmail(this)">×</span>
+        </div>
+        <input class="inp-email" id="inpEmail" type="email" placeholder="agregar@correo.cl" onkeydown="if(event.key==='Enter')agregarEmail()">
+        <button class="btn-add-em" onclick="agregarEmail()">+ Agregar</button>
+      </div>
+      <div style="font-size:7pt;color:#555;margin-bottom:3px">Mensaje (editable):</div>
+      <div class="notif-msg" contenteditable="true" id="txtNotif">Estimados, les informamos que el día 10-05-2026 se realizará aplicación de agroquímicos en el Campo San Pablo (El Romero, La Serena) — Folio SP-042. Productos: Defender Potasio, Ripper Max 75 SG, Exirel 200 SC. Cuarteles: 15, 16, 18, 19, 20. Superficie: 23,11 ha. Atentamente, San Pedro SpA.</div>
+    </div>
+  </div>
+
+  <div class="nota-legal">
+    * Verificar velocidad y presión en tabla de calibraciones. | * Use siempre la ETIQUETA del producto como referencia oficial.
+  </div>
+
+  <!-- FIRMAS -->
+  <div class="firmas">
+    <div><div class="firma-linea">Responsable Técnico<br><strong>Ing. Agr.</strong></div></div>
+    <div><div class="firma-linea">Emisor</div></div>
+    <div><div class="firma-linea">Recibe / Aplicador</div></div>
+  </div>
+
+</div><!-- /página 1 -->
+
+<!-- ════════════════════ PÁGINA 2 — DESGLOSE ════════════════ -->
+<div class="page page-2" id="pagina2">
+
+  <div class="p2-titulo">Desglose por cuartel para la aplicación</div>
+  <div class="p2-sub">
+    Folio SP-042 · Campo San Pablo · Emisión: 08-05-2026 · Inicio aplicación: 10-05-2026 ·
+    Mojamiento: 4.500 L/ha · Estanque: 2.000 L
+  </div>
+
+  <table class="t-desglose">
+    <thead>
+      <tr>
+        <th style="width:8%;text-align:left">Cuartel</th>
+        <th style="width:7%">Superficie<br>(ha)</th>
+        <th style="width:9%">Volumen<br>solución (L)</th>
+        <th style="width:8%">Maquinadas<br>completas<br>(2.000 L c/u)</th>
+        <th style="width:8%">Litros<br>adicionales</th>
+        <!-- Productos -->
+        <th style="width:12%">Defender Potasio<br><small style="font-weight:normal">Fosfito K · 300 cc/100L</small><br>(L)</th>
+        <th style="width:12%">Ripper Max 75 SG<br><small style="font-weight:normal">Abamectina · 1.000 g/100L</small><br>(kg)</th>
+        <th style="width:12%">Exirel 200 SC<br><small style="font-weight:normal">Cyantraniliprole · 50 cc/100L</small><br>(L)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- C15: 3.79 ha × 4500 = 17055 L → 8 maq (16000) + 1055 L -->
+      <!-- Def: 17055×300/100000 = 51,17 L | Rip: 17055×1000/100000 = 170,55 kg | Exi: 17055×50/100000 = 8,53 L -->
+      <tr>
+        <td class="dn">15</td>
+        <td>3,79</td>
+        <td>17.055</td>
+        <td>8</td>
+        <td>1.055</td>
+        <td>51,2</td>
+        <td>170,6</td>
+        <td>8,5</td>
+      </tr>
+      <!-- C16: 4.31 × 4500 = 19395 → 9 maq + 1395 -->
+      <!-- Def: 58,19 | Rip: 193,95 | Exi: 9,70 -->
+      <tr>
+        <td class="dn">16</td>
+        <td>4,31</td>
+        <td>19.395</td>
+        <td>9</td>
+        <td>1.395</td>
+        <td>58,2</td>
+        <td>193,9</td>
+        <td>9,7</td>
+      </tr>
+      <!-- C18: 4.73 × 4500 = 21285 → 10 maq + 1285 -->
+      <!-- Def: 63,86 | Rip: 212,85 | Exi: 10,64 -->
+      <tr>
+        <td class="dn">18</td>
+        <td>4,73</td>
+        <td>21.285</td>
+        <td>10</td>
+        <td>1.285</td>
+        <td>63,9</td>
+        <td>212,9</td>
+        <td>10,6</td>
+      </tr>
+      <!-- C19: 5.14 × 4500 = 23130 → 11 maq + 1130 -->
+      <!-- Def: 69,39 | Rip: 231,30 | Exi: 11,57 -->
+      <tr>
+        <td class="dn">19</td>
+        <td>5,14</td>
+        <td>23.130</td>
+        <td>11</td>
+        <td>1.130</td>
+        <td>69,4</td>
+        <td>231,3</td>
+        <td>11,6</td>
+      </tr>
+      <!-- C20: igual a C19 -->
+      <tr>
+        <td class="dn">20</td>
+        <td>5,14</td>
+        <td>23.130</td>
+        <td>11</td>
+        <td>1.130</td>
+        <td>69,4</td>
+        <td>231,3</td>
+        <td>11,6</td>
+      </tr>
+      <!-- TOTALES: 23.11 ha | 103995 L | 51 maq | 1995 L | 312 L | 1039,95 kg | 52,0 L -->
+      <tr class="fila-tot">
+        <td style="text-align:left">TOTAL</td>
+        <td>23,11</td>
+        <td>103.995</td>
+        <td>51</td>
+        <td>1.995</td>
+        <td>312,1</td>
+        <td>1.040,0</td>
+        <td>52,0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="maq-tot-box">
+    Maquinadas totales: <strong>51 completas (2.000 L) + 1.995 L adicionales = 51,998 maquinadas</strong>
+  </div>
+
+  <p class="nota-maq">
+    * Maquinada completa = 2.000 L de solución preparada. Los litros adicionales se preparan en una maquinada parcial.<br>
+    * Verificar nivel del estanque al iniciar cada maquinada. Las cantidades son referenciales según calibración del equipo.
+  </p>
+
+  <!-- FIRMAS página 2 -->
+  <div class="firmas" style="margin-top:30px">
+    <div><div class="firma-linea">Responsable Técnico</div></div>
+    <div><div class="firma-linea">Operador / Aplicador</div></div>
+    <div><div class="firma-linea">Supervisión</div></div>
+  </div>
+
+</div><!-- /página 2 -->
+
+<!-- ════════════════════ JAVASCRIPT ══════════════════════════ -->
+<script>
+// ── R010: Exportar CSV (registro de aplicaciones) ────────────
+function exportarCSV() {
+  const oaData = {
+    folio: 'SP-042',
+    emisión: '08-05-2026',
+    inicio: '10-05-2026',
+    predio: 'San Pablo',
+    mojamiento: 4500,
+    estanque: 2000,
+    mercado: 'China / UE',
+  };
+
+  const cuarteles = [
+    { nombre:'15', especie:'Limón', ha:3.79, litros:17055, maq_c:8,  lit_ad:1055 },
+    { nombre:'16', especie:'Limón', ha:4.31, litros:19395, maq_c:9,  lit_ad:1395 },
+    { nombre:'18', especie:'Limón', ha:4.73, litros:21285, maq_c:10, lit_ad:1285 },
+    { nombre:'19', especie:'Limón', ha:5.14, litros:23130, maq_c:11, lit_ad:1130 },
+    { nombre:'20', especie:'Limón', ha:5.14, litros:23130, maq_c:11, lit_ad:1130 },
+  ];
+
+  const productos = [
+    { nombre:'Defender Potasio',  ia:'Fosfito de potasio',    dosis:300,  unidad:'cc', carencia_etiq:0,  carencia_asoex:'-' },
+    { nombre:'Ripper Max 75 SG',  ia:'Abamectina 75 g/kg',    dosis:1000, unidad:'g',  carencia_etiq:14, carencia_asoex:30  },
+    { nombre:'Exirel 200 SC',     ia:'Cyantraniliprole 200 g/L', dosis:50, unidad:'cc', carencia_etiq:7,  carencia_asoex:14  },
+  ];
+
+  // Hoja 1 — Resumen OA
+  let csv = '﻿'; // BOM UTF-8
+  csv += `REGISTRO DE APLICACIÓN\n`;
+  csv += `Folio;${oaData.folio}\n`;
+  csv += `Fecha Emisión;${oaData.emisión}\n`;
+  csv += `Fecha Inicio;${oaData.inicio}\n`;
+  csv += `Predio;${oaData.predio}\n`;
+  csv += `Mojamiento (L/ha);${oaData.mojamiento}\n`;
+  csv += `Cap. Estanque (L);${oaData.estanque}\n`;
+  csv += `Mercado;${oaData.mercado}\n\n`;
+
+  // Productos
+  csv += `PRODUCTOS\n`;
+  csv += `Nombre comercial;Ingrediente activo;Dosis/100L;Unidad;Carencia etiq.(días);Carencia ASOEX (días)\n`;
+  productos.forEach(p => {
+    csv += `${p.nombre};${p.ia};${p.dosis};${p.unidad};${p.carencia_etiq};${p.carencia_asoex}\n`;
+  });
+  csv += '\n';
+
+  // Cuarteles
+  csv += `DESGLOSE POR CUARTEL\n`;
+
+  // Cabecera dinámica con productos
+  let cabProd = productos.map(p => {
+    const u = p.unidad === 'g' ? 'kg' : 'L';
+    return `${p.nombre} (${u})`;
+  }).join(';');
+  csv += `Cuartel;Especie;Superficie (ha);Volumen solución (L);Maquinadas completas;Litros adicionales;${cabProd}\n`;
+
+  cuarteles.forEach(c => {
+    let cantProd = productos.map(p => {
+      const cant = c.litros * p.dosis / 100;
+      if (p.unidad === 'g') return (cant / 1000).toFixed(2); // kg
+      return (cant / 1000).toFixed(2); // L
+    }).join(';');
+    csv += `${c.nombre};${c.especie};${c.ha};${c.litros};${c.maq_c};${c.lit_ad};${cantProd}\n`;
+  });
+
+  // Totales
+  const totHa = cuarteles.reduce((s,c)=>s+c.ha,0).toFixed(2);
+  const totLit = cuarteles.reduce((s,c)=>s+c.litros,0);
+  const totMaq = cuarteles.reduce((s,c)=>s+c.maq_c,0);
+  const totAdd = cuarteles.reduce((s,c)=>s+c.lit_ad,0);
+  let totProd = productos.map(p => {
+    const t = cuarteles.reduce((s,c)=> s + c.litros * p.dosis / 100, 0);
+    return (p.unidad === 'g' ? t/1000 : t/1000).toFixed(2);
+  }).join(';');
+  csv += `TOTAL;;${totHa};${totLit};${totMaq};${totAdd};${totProd}\n`;
+
+  // Descargar
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `OA_${oaData.folio}_${oaData.inicio.replace(/-/g,'')}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── Gestión de emails ─────────────────────────────────────────
+function agregarEmail() {
+  const inp = document.getElementById('inpEmail');
+  const val = inp.value.trim();
+  if (!val || !val.includes('@')) { inp.focus(); return; }
+
+  const tag = document.createElement('div');
+  tag.className = 'email-tag';
+  tag.dataset.email = val;
+  tag.innerHTML = `${val} <span class="rm" onclick="eliminarEmail(this)">×</span>`;
+
+  const list = document.getElementById('emailList');
+  list.insertBefore(tag, inp.previousSibling.nextSibling);
+  inp.value = '';
+  inp.focus();
+}
+
+function eliminarEmail(el) {
+  el.closest('.email-tag').remove();
+}
+
+// ── Enviar notificación (preparado, alerta por ahora) ─────────
+function enviarNotificacion() {
+  const emails = [...document.querySelectorAll('#emailList .email-tag')]
+    .map(t => t.dataset.email);
+  const msg = document.getElementById('txtNotif').innerText;
+
+  if (emails.length === 0) {
+    alert('Agrega al menos un correo destinatario.');
+    return;
+  }
+  // En producción: llamar al backend Flask /oas/notificar con { emails, mensaje }
+  alert(
+    `Notificación preparada para:\n${emails.join('\n')}\n\n` +
+    `Mensaje:\n"${msg.substring(0,120)}..."\n\n` +
+    `(Integración con servidor de correo pendiente de configuración en el ERP)`
+  );
+}
+</script>
+</body>
+</html>
