@@ -1,3 +1,6 @@
+import csv
+import os
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
 from models import db, OrdenAplicacion, OAProducto, OACuartel, Agricola, Cuartel, Producto
 from calculadora import (calcular_fecha_desde, calcular_fecha_emision_retroactiva,
@@ -5,6 +8,16 @@ from calculadora import (calcular_fecha_desde, calcular_fecha_emision_retroactiv
                          calcular_litros_cuartel, calcular_maquinadas,
                          validar_incompatibilidades, validar_borneo_limon)
 from datetime import date, datetime
+
+_DATOS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'datos')
+
+
+def _cargar_maquinaria():
+    ruta = os.path.join(_DATOS_DIR, 'maquinaria.csv')
+    if not os.path.exists(ruta):
+        return []
+    with open(ruta, newline='', encoding='utf-8') as f:
+        return list(csv.DictReader(f))
 
 oas_bp = Blueprint('oas', __name__)
 
@@ -29,7 +42,8 @@ def nueva():
     if request.method == 'POST':
         return _procesar_form_oa(None)
     agricolas = Agricola.query.filter_by(activa=True).all()
-    return render_template('oas/form.html', oa=None, agricolas=agricolas)
+    return render_template('oas/form.html', oa=None, agricolas=agricolas,
+                           maquinaria=_cargar_maquinaria())
 
 
 @oas_bp.route('/<int:oa_id>/editar', methods=['GET', 'POST'])
@@ -41,7 +55,8 @@ def editar(oa_id):
     if request.method == 'POST':
         return _procesar_form_oa(oa)
     agricolas = Agricola.query.filter_by(activa=True).all()
-    return render_template('oas/form.html', oa=oa, agricolas=agricolas)
+    return render_template('oas/form.html', oa=oa, agricolas=agricolas,
+                           maquinaria=_cargar_maquinaria())
 
 
 @oas_bp.route('/<int:oa_id>')

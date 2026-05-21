@@ -1,5 +1,18 @@
+import csv
+import os
+
 from flask import Blueprint, render_template, request, jsonify
 from models import db, Agricola, Cuartel, Producto, TipoAplicacion
+
+_DATOS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'datos')
+
+
+def _leer_csv(nombre_archivo):
+    ruta = os.path.join(_DATOS_DIR, nombre_archivo)
+    if not os.path.exists(ruta):
+        return []
+    with open(ruta, newline='', encoding='utf-8') as f:
+        return list(csv.DictReader(f))
 
 maestros_bp = Blueprint('maestros', __name__)
 
@@ -37,7 +50,7 @@ def productos():
 
 @maestros_bp.route('/api/cuarteles/<int:agricola_id>')
 def api_cuarteles(agricola_id):
-    cuarteles = Cuartel.query.filter_by(agricola_id=agricola_id, activo=True).order_by(Cuartel.nombre).all()
+    cuarteles = Cuartel.query.filter_by(agricola_id=agricola_id, activo=True).order_by(Cuartel.especie, Cuartel.nombre).all()
     return jsonify([{
         'id': c.id,
         'nombre': c.nombre,
@@ -58,10 +71,21 @@ def api_productos(agricola_id):
         'id': p.id,
         'nombre': p.nombre_comercial,
         'ia': p.ingrediente_activo,
+        'incompat': p.incompatibilidades or '',
         'dosis_100L': float(p.dosis_100L),
         'unidad': p.unidad_dosis,
         'objetivo': p.objetivo or '',
     } for p in productos])
+
+
+@maestros_bp.route('/api/maquinaria')
+def api_maquinaria():
+    filas = _leer_csv('maquinaria.csv')
+    return jsonify([{
+        'nombre': r['nombre'],
+        'capacidad_L': int(r['capacidad_L']) if r.get('capacidad_L') else None,
+        'tipo': r.get('tipo', ''),
+    } for r in filas])
 
 
 @maestros_bp.route('/api/mojamiento/<string:tipo_codigo>')

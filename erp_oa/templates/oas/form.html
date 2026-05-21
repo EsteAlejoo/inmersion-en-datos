@@ -30,20 +30,22 @@
                value="{{ oa.fecha_inicio_aplicacion.isoformat() if oa else '' }}">
       </div>
       <div class="form-group">
-        <label>Tipo de Aplicacion</label>
-        <select name="tipo_aplicacion" id="tipo_aplic" onchange="sugerirMojamiento()">
-          <option value="MOSQ"  {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'MOSQ' }}>Control mosquita blanca (4.500 L/ha)</option>
-          <option value="CHANCH"{{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'CHANCH' }}>Control chanchito blanco (5.000 L/ha)</option>
-          <option value="LAV"   {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'LAV' }}>Lavado con detergente (9.000 L/ha)</option>
-          <option value="FERT"  {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'FERT' }}>Fertilizante foliar (2.000 L/ha)</option>
-          <option value="HERB"  {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'HERB' }}>Herbicida (3.200 L/ha)</option>
-          <option value="INSEC" {{ 'selected' if oa and oa.tipo_aplicacion_codigo == 'INSEC' }}>Insecticida / Acaricida (4.000 L/ha)</option>
-        </select>
+        <label>Mojamiento (L/ha)</label>
+        <input type="number" name="mojamiento_Lha" id="mojamiento" min="500" max="15000" required
+               value="{{ oa.mojamiento_Lha if oa else 4500 }}" oninput="recalcular()">
       </div>
       <div class="form-group">
-        <label>Mojamiento (L/ha) <span class="text-muted" style="font-weight:normal">← editable</span></label>
-        <input type="number" name="mojamiento_Lha" id="mojamiento" min="500" max="15000" required
-               value="{{ oa.mojamiento_Lha if oa else 4000 }}" oninput="recalcular()">
+        <label>Maquinaria</label>
+        <select name="tipo_maquina" id="tipo_maquina" onchange="sugerirEstanque(this)">
+          <option value="">Seleccionar...</option>
+          {% for m in maquinaria %}
+          <option value="{{ m.nombre }}"
+                  data-cap="{{ m.capacidad_L }}"
+                  {{ 'selected' if oa and oa.tipo_maquina == m.nombre }}>
+            {{ m.nombre }}
+          </option>
+          {% endfor %}
+        </select>
       </div>
       <div class="form-group">
         <label>Capacidad Estanque (L)</label>
@@ -63,23 +65,13 @@
         <label>Estado Fenologico</label>
         <select name="estado_fenologico">
           <option value="">Seleccionar...</option>
-          <option value="Desarrollo yemas"   {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo yemas' }}>Desarrollo yemas (BBCH00)</option>
-          <option value="Desarrollo hojas"   {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo hojas' }}>Desarrollo hojas (BBCH10)</option>
-          <option value="Aparicion boton floral" {{ 'selected' if oa and oa.estado_fenologico == 'Aparicion boton floral' }}>Aparicion boton floral (BBCH51)</option>
-          <option value="Floracion"          {{ 'selected' if oa and oa.estado_fenologico == 'Floracion' }}>Floracion (BBCH60)</option>
-          <option value="Desarrollo fruto"   {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo fruto' }}>Desarrollo fruto (BBCH70)</option>
-          <option value="Maduracion"         {{ 'selected' if oa and oa.estado_fenologico == 'Maduracion' }}>Maduracion (BBCH80)</option>
-          <option value="Senescencia"        {{ 'selected' if oa and oa.estado_fenologico == 'Senescencia' }}>Senescencia (BBCH89)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Maquinaria</label>
-        <select name="tipo_maquina">
-          <option value="">Seleccionar...</option>
-          <option value="Pulverizadora 2000L" {{ 'selected' if oa and oa.tipo_maquina == 'Pulverizadora 2000L' }}>Pulverizadora 2000L</option>
-          <option value="Pulverizadora 1500L" {{ 'selected' if oa and oa.tipo_maquina == 'Pulverizadora 1500L' }}>Pulverizadora 1500L</option>
-          <option value="Piton 1500L"         {{ 'selected' if oa and oa.tipo_maquina == 'Piton 1500L' }}>Piton 1500L</option>
-          <option value="Mochila espaldera"   {{ 'selected' if oa and oa.tipo_maquina == 'Mochila espaldera' }}>Mochila espaldera</option>
+          <option value="Desarrollo yemas"       {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo yemas' }}>Desarrollo yemas (BBCH00)</option>
+          <option value="Desarrollo hojas"        {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo hojas' }}>Desarrollo hojas (BBCH10)</option>
+          <option value="Aparicion boton floral"  {{ 'selected' if oa and oa.estado_fenologico == 'Aparicion boton floral' }}>Aparicion boton floral (BBCH51)</option>
+          <option value="Floracion"               {{ 'selected' if oa and oa.estado_fenologico == 'Floracion' }}>Floracion (BBCH60)</option>
+          <option value="Desarrollo fruto"        {{ 'selected' if oa and oa.estado_fenologico == 'Desarrollo fruto' }}>Desarrollo fruto (BBCH70)</option>
+          <option value="Maduracion"              {{ 'selected' if oa and oa.estado_fenologico == 'Maduracion' }}>Maduracion (BBCH80)</option>
+          <option value="Senescencia"             {{ 'selected' if oa and oa.estado_fenologico == 'Senescencia' }}>Senescencia (BBCH89)</option>
         </select>
       </div>
       <div class="form-group">
@@ -88,13 +80,15 @@
                value="{{ oa.mercado_destino if oa else '' }}">
       </div>
       <div class="form-group">
-        <label>Agronomo Responsable</label>
-        <input type="text" name="agronomo" value="{{ oa.agronomo if oa else '' }}">
+        <label>Emisor / Encargado</label>
+        <input type="text" name="agronomo" placeholder="Nombre · Cargo"
+               value="{{ oa.agronomo if oa else '' }}">
       </div>
     </div>
 
     <!-- BLOQUE 2: Productos -->
     <h3 style="margin-top:20px">Productos</h3>
+    <div id="incompat-alertas"></div>
     <div style="overflow-x:auto">
       <table id="tabla-productos">
         <thead>
@@ -115,6 +109,7 @@
             <tr class="fila-producto"
                 data-pid="{{ op.producto_id }}"
                 data-ia="{{ op.producto.ingrediente_activo }}"
+                data-incompat="{{ op.producto.incompatibilidades or '' }}"
                 data-dosis="{{ op.dosis_100L }}"
                 data-unidad="{{ op.unidad }}"
                 data-objetivo="{{ op.objetivo or '' }}">
@@ -145,15 +140,26 @@
   </form>
 </div>
 
+<style>
+.alerta-incompat {
+  background:#fff0f0;border:1px solid #e74c3c;border-radius:4px;
+  padding:8px 12px;margin-bottom:6px;font-size:13px;color:#c0392b;
+}
+.especie-header {
+  grid-column:1/-1;padding:4px 0 2px;
+  font-size:13px;font-weight:700;color:#2d6a4f;
+  border-bottom:1px solid #d4edda;margin-top:8px;
+}
+.especie-header:first-child { margin-top:0; }
+</style>
+
 <script>
-const MOJAMIENTOS = {MOSQ:4500, CHANCH:5000, LAV:9000, FERT:2000, HERB:3200, INSEC:4000};
-const MOJ = () => parseInt(document.getElementById('mojamiento').value) || 4000;
+const MOJ = () => parseInt(document.getElementById('mojamiento').value) || 4500;
 const EST = () => parseInt(document.getElementById('estanque').value) || 2000;
 
-// Datos pre-cargados para edicion
 const PROD_EXISTENTES = [
   {% if oa %}{% for op in oa.productos %}
-  {id:{{ op.producto_id }}, ia:"{{ op.producto.ingrediente_activo }}", dosis:{{ op.dosis_100L }}, unidad:"{{ op.unidad }}", objetivo:"{{ op.objetivo or '' }}"},
+  {id:{{ op.producto_id }}, ia:"{{ op.producto.ingrediente_activo|e }}", incompat:"{{ (op.producto.incompatibilidades or '')|e }}", dosis:{{ op.dosis_100L }}, unidad:"{{ op.unidad }}", objetivo:"{{ op.objetivo or '' }}"},
   {% endfor %}{% endif %}
 ];
 const CUART_EXISTENTES = [
@@ -162,10 +168,12 @@ const CUART_EXISTENTES = [
   {% endfor %}{% endif %}
 ];
 
-function sugerirMojamiento() {
-  const tipo = document.getElementById('tipo_aplic').value;
-  document.getElementById('mojamiento').value = MOJAMIENTOS[tipo] || 4000;
-  recalcular();
+function sugerirEstanque(sel) {
+  const cap = sel.selectedOptions[0]?.dataset.cap;
+  if (cap) {
+    document.getElementById('estanque').value = cap;
+    recalcular();
+  }
 }
 
 function recalcular() {
@@ -178,16 +186,55 @@ function recalcular() {
     fila.querySelector('.dosis-maq').textContent = dosisMaq + ' ' + unidad;
   });
   calcularSuperficie();
+  verificarIncompatibilidades();
+}
+
+function verificarIncompatibilidades() {
+  const filas = document.querySelectorAll('.fila-producto');
+  const productos = Array.from(filas).map(f => ({
+    ia: (f.querySelector('.ia-cell')?.textContent || '').toLowerCase(),
+    incompat: (f.dataset.incompat || '').toLowerCase(),
+    formulacion: '',
+  }));
+
+  const alertas = [];
+
+  // R001: aceite mineral + azufre
+  const tieneAceite = productos.some(p => p.ia.includes('parafina') || p.ia.includes('aceite mineral') || p.ia.includes('aceite'));
+  const tieneAzufre = productos.some(p => p.ia.includes('azufre'));
+  if (tieneAceite && tieneAzufre)
+    alertas.push('Incompatibilidad Fatal: Aceite mineral y Azufre — separar 30 días');
+
+  // R002: cyantraniliprole + aceite
+  const tieneCyant = productos.some(p => p.ia.includes('cyantraniliprole'));
+  if (tieneCyant && tieneAceite)
+    alertas.push('Cyantraniliprole (Exirel) incompatible con aceites y formulaciones EC/OD');
+
+  // R004 genérico: campo incompatibilidades vs IA del resto
+  productos.forEach((p, i) => {
+    if (!p.incompat) return;
+    productos.forEach((q, j) => {
+      if (i === j || !q.ia) return;
+      if (q.ia && p.incompat.includes(q.ia)) {
+        alertas.push(`Incompatibilidad detectada entre ingredientes activos en la mezcla`);
+      }
+    });
+  });
+
+  const cont = document.getElementById('incompat-alertas');
+  const unicos = [...new Set(alertas)];
+  cont.innerHTML = unicos.map(m => `<div class="alerta-incompat">⚠ ${m}</div>`).join('');
 }
 
 function agregarProducto(data={}) {
   const prods = window._productos || [];
   const opts = prods.map(p =>
-    `<option value="${p.id}" data-ia="${p.ia}" data-dosis="${p.dosis_100L}" data-unidad="${p.unidad}"
+    `<option value="${p.id}" data-ia="${p.ia}" data-incompat="${p.incompat||''}" data-dosis="${p.dosis_100L}" data-unidad="${p.unidad}"
       ${data.id == p.id ? 'selected' : ''}>${p.nombre}</option>`
   ).join('');
   const tr = document.createElement('tr');
   tr.className = 'fila-producto';
+  tr.dataset.incompat = data.incompat || '';
   tr.innerHTML = `
     <td><select name="producto_id[]" class="prod-select" style="width:100%" onchange="selProducto(this)">${opts}</select></td>
     <td class="ia-cell" style="font-size:12px;color:#555">${data.ia||''}</td>
@@ -211,9 +258,10 @@ function agregarProducto(data={}) {
 function selProducto(sel) {
   const opt = sel.selectedOptions[0];
   const fila = sel.closest('tr');
-  fila.querySelector('.ia-cell').textContent     = opt.dataset.ia || '';
-  fila.querySelector('.dosis-input').value       = opt.dataset.dosis || '';
-  fila.querySelector('.unidad-select').value     = opt.dataset.unidad || 'cc';
+  fila.querySelector('.ia-cell').textContent = opt.dataset.ia || '';
+  fila.dataset.incompat = opt.dataset.incompat || '';
+  fila.querySelector('.dosis-input').value  = opt.dataset.dosis || '';
+  fila.querySelector('.unidad-select').value = opt.dataset.unidad || 'cc';
   recalcular();
 }
 
@@ -228,7 +276,6 @@ async function cargarDatos() {
   window._productos  = await rProds.json();
   window._cuarteles  = await rCuart.json();
 
-  // Reconstruir tabla de productos
   const tbody = document.getElementById('productos-tbody');
   tbody.innerHTML = '';
   if (PROD_EXISTENTES.length > 0) {
@@ -237,25 +284,43 @@ async function cargarDatos() {
     agregarProducto();
   }
 
-  // Renderizar cuarteles
+  renderizarCuarteles();
+}
+
+function renderizarCuarteles() {
   const cont = document.getElementById('cuarteles-lista');
   document.getElementById('msg-cuarteles')?.remove();
-  cont.innerHTML = window._cuarteles.map(c => `
-    <label class="cuartel-card" style="background:white;border:1px solid #ddd;border-radius:4px;padding:8px 10px;cursor:pointer;display:block">
-      <div style="display:flex;align-items:center;gap:6px">
-        <input type="checkbox" class="chk-cuartel" data-id="${c.id}" data-ha="${c.ha_total}"
-               onchange="toggleHaInput(this);calcularSuperficie()"
-               ${CUART_EXISTENTES.find(e=>e.id==c.id)?'checked':''}>
-        <span><strong>${c.nombre}</strong>${c.es_ensayo?' <small style="color:#e67e22">[ensayo]</small>':''}</span>
-      </div>
-      <div style="font-size:12px;color:#555;margin:2px 0 0 20px">${c.especie} &middot; ${c.ha_total} ha</div>
-      <div class="ha-row" style="margin-top:6px;margin-left:20px;display:${CUART_EXISTENTES.find(e=>e.id==c.id)?'block':'none'}">
-        <input type="number" class="ha-input" placeholder="ha efectivas" step="0.01"
-               value="${(CUART_EXISTENTES.find(e=>e.id==c.id)||{}).ha||c.ha_total}"
-               style="width:100px;padding:4px 6px;font-size:12px" oninput="calcularSuperficie()">
-      </div>
-    </label>
-  `).join('');
+
+  // Agrupar por especie (el API ya viene ordenado por especie, nombre)
+  const byEspecie = {};
+  (window._cuarteles || []).forEach(c => {
+    if (!byEspecie[c.especie]) byEspecie[c.especie] = [];
+    byEspecie[c.especie].push(c);
+  });
+
+  let html = '';
+  Object.entries(byEspecie).forEach(([especie, cuarteles]) => {
+    html += `<div class="especie-header">${especie}</div>`;
+    cuarteles.forEach(c => {
+      const existe = CUART_EXISTENTES.find(e => e.id == c.id);
+      html += `
+        <label class="cuartel-card" style="background:white;border:1px solid #ddd;border-radius:4px;padding:8px 10px;cursor:pointer;display:block">
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="checkbox" class="chk-cuartel" data-id="${c.id}" data-ha="${c.ha_total}"
+                   onchange="toggleHaInput(this);calcularSuperficie()"
+                   ${existe?'checked':''}>
+            <span><strong>${c.nombre}</strong>${c.es_ensayo?' <small style="color:#e67e22">[ensayo]</small>':''}</span>
+          </div>
+          <div style="font-size:12px;color:#555;margin:2px 0 0 20px">${c.variedad||''} &middot; ${c.ha_total} ha</div>
+          <div class="ha-row" style="margin-top:6px;margin-left:20px;display:${existe?'block':'none'}">
+            <input type="number" class="ha-input" placeholder="ha efectivas" step="0.01"
+                   value="${existe ? existe.ha : c.ha_total}"
+                   style="width:100px;padding:4px 6px;font-size:12px" oninput="calcularSuperficie()">
+          </div>
+        </label>`;
+    });
+  });
+  cont.innerHTML = html;
   calcularSuperficie();
 }
 
@@ -282,9 +347,7 @@ function calcularSuperficie() {
 }
 
 document.getElementById('form-oa').addEventListener('submit', function(e) {
-  // Limpiar hidden inputs previos
   this.querySelectorAll('.hidden-cuartel').forEach(el => el.remove());
-
   const checks = document.querySelectorAll('.chk-cuartel:checked');
   checks.forEach(chk => {
     const card = chk.closest('.cuartel-card');
@@ -295,15 +358,15 @@ document.getElementById('form-oa').addEventListener('submit', function(e) {
     idInput.className = 'hidden-cuartel';
     this.appendChild(idInput);
 
-    const haInput = document.createElement('input');
-    haInput.type = 'hidden'; haInput.name = 'ha_efectivas[]'; haInput.value = ha;
-    haInput.className = 'hidden-cuartel';
-    this.appendChild(haInput);
+    const haInp = document.createElement('input');
+    haInp.type = 'hidden'; haInp.name = 'ha_efectivas[]'; haInp.value = ha;
+    haInp.className = 'hidden-cuartel';
+    this.appendChild(haInp);
 
-    const fechaInput = document.createElement('input');
-    fechaInput.type = 'hidden'; fechaInput.name = 'fecha_aplicacion[]'; fechaInput.value = '';
-    fechaInput.className = 'hidden-cuartel';
-    this.appendChild(fechaInput);
+    const fechaInp = document.createElement('input');
+    fechaInp.type = 'hidden'; fechaInp.name = 'fecha_aplicacion[]'; fechaInp.value = '';
+    fechaInp.className = 'hidden-cuartel';
+    this.appendChild(fechaInp);
   });
 });
 

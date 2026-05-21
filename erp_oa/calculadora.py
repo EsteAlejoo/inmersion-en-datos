@@ -43,27 +43,53 @@ def calcular_necesidad_total(dosis_ha, ha_totales):
 
 
 def validar_incompatibilidades(productos):
-    """Retorna lista de alertas de incompatibilidad entre productos"""
+    """Detecta incompatibilidades usando ingrediente_activo y campo incompatibilidades."""
     alertas = []
-    nombres = [p.nombre_comercial.upper() for p in productos]
-    formulaciones = [p.formulacion.upper() if p.formulacion else '' for p in productos]
+    ias = [(p.ingrediente_activo or '').lower() for p in productos]
+    formulaciones = [(p.formulacion or '').upper() for p in productos]
 
-    # R001: Winspray + Azufre
-    if any('WINSPRAY' in n for n in nombres) and any('AZUFRE' in n or 'THIOLUX' in n for n in nombres):
-        alertas.append({'nivel': 'ROJO', 'mensaje': 'Incompatibilidad Fatal: Separar Winspray y Azufre 30 dias'})
+    # R001 (IA): aceites minerales/parafina + azufre → separar 30 días
+    tiene_aceite = any('parafina' in ia or 'aceite mineral' in ia or 'aceite' in ia for ia in ias)
+    tiene_azufre = any('azufre' in ia for ia in ias)
+    if tiene_aceite and tiene_azufre:
+        alertas.append({'nivel': 'ROJO', 'mensaje': 'Incompatibilidad Fatal: Aceite mineral y Azufre — separar 30 días'})
 
-    # R002: Exirel + Aceites/EC/OD
-    if any('EXIREL' in n for n in nombres):
-        if any(f in formulaciones for f in ['EC', 'OD']) or any('ACEITE' in n or 'WINSPRAY' in n for n in nombres):
-            alertas.append({'nivel': 'ROJO', 'mensaje': 'Exirel incompatible con aceites y formulaciones EC/OD'})
+    # R002 (IA): cyantraniliprole (Exirel) + aceites/EC/OD
+    tiene_cyantraniliprole = any('cyantraniliprole' in ia for ia in ias)
+    if tiene_cyantraniliprole:
+        if any(f in formulaciones for f in ('EC', 'OD')) or tiene_aceite:
+            alertas.append({'nivel': 'ROJO', 'mensaje': 'Cyantraniliprole (Exirel) incompatible con aceites y formulaciones EC/OD'})
 
-    return alertas
+    # R004 genérico: cruza campo incompatibilidades de cada producto con IA de los demás
+    for i, p in enumerate(productos):
+        if not p.incompatibilidades:
+            continue
+        texto = p.incompatibilidades.lower()
+        for j, q in enumerate(productos):
+            if i == j:
+                continue
+            ia_q = (q.ingrediente_activo or '').lower()
+            if ia_q and ia_q in texto:
+                msg = (f'Incompatibilidad: {p.ingrediente_activo} '
+                       f'incompatible con {q.ingrediente_activo}')
+                alertas.append({'nivel': 'ROJO', 'mensaje': msg})
+
+    # Deduplicar
+    vistos, unicos = set(), []
+    for a in alertas:
+        if a['mensaje'] not in vistos:
+            vistos.add(a['mensaje'])
+            unicos.append(a)
+    return unicos
 
 
 def validar_borneo_limon(productos, especie):
-    """R003: Borneo en Limon tiene carencia 70 dias"""
+    """R003 (IA): bifenazate en Limón = 70 días carencia"""
     alertas = []
     if 'LIMON' in especie.upper():
-        if any('BORNEO' in p.nombre_comercial.upper() for p in productos):
-            alertas.append({'nivel': 'ROJO', 'mensaje': 'CRITICO: Borneo en Limon = 70 dias carencia (vs 3 dias otros citricos)'})
+        if any('bifenazate' in (p.ingrediente_activo or '').lower() for p in productos):
+            alertas.append({
+                'nivel': 'ROJO',
+                'mensaje': 'CRITICO: Bifenazate (Borneo) en Limón = 70 días carencia (vs 3 días otros cítricos)'
+            })
     return alertas
